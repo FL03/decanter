@@ -1,10 +1,10 @@
-name: Code Analysis
+name: Analysis
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "*" ]
+    branches: [ "master" ]
 
 jobs:
   code-analysis:
