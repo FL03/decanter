@@ -1,27 +1,31 @@
 [workspace]
-default-members = ["bin", "lib"]
-members = ["bin", "lib"]
+default-members = [
+    "decanter",
+    "slv"
+]
+members = [
+    "decanter",
+    "slv"
+]
 
 [profile.dev]
-opt-level = 0
-debug = true
-split-debuginfo = '...'  # Platform-specific.
-debug-assertions = true
-overflow-checks = true
-lto = false
-panic = 'unwind'
-incremental = true
 codegen-units = 256
+debug = true
+debug-assertions = true
+incremental = true
+lto = false
+panic = "unwind"
 rpath = false
+opt-level = 0
+overflow-checks = true
 
 [profile.release]
-opt-level = "z"
-debug = false
-split-debuginfo = '...'  # Platform-specific.
-debug-assertions = false
-overflow-checks = false
-lto = false
-panic = 'unwind'
-incremental = false
 codegen-units = 16
+debug = false
+debug-assertions = false
+incremental = false
+lto = false
+panic = "unwind"
 rpath = false
+opt-level = "z"
+overflow-checks = false

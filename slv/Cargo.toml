@@ -1,0 +1,30 @@
+[package]
+authors = ["FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)"]
+categories = []
+description = "slv is a rust implementation of the novel Sleeve based on tweakable hash functions"
+edition = "2021"
+homepage = "https://gitlab.com/crsty/crates/svl/-/wiki"
+keywords = ["scsys"]
+license = "MIT"
+name = "decanter-slv"
+readme = "https://gitlab.com/crsty/crates/svl#README"
+repository = "https://gitlab.com/crsty/crates/svl"
+version = "0.1.0"
+
+[features]
+default = []
+
+[lib]
+bench = false
+crate-type = ["cdylib", "rlib"]
+test = true
+
+[[test]]
+name = "core"
+path = "tests/core.rs"
+
+[dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]

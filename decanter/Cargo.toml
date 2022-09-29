@@ -1,0 +1,31 @@
+[package]
+authors = ["FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)"]
+categories = []
+description = "decanter"
+edition = "2021"
+homepage = "https://gitlab.com/crsty/crates/decanter/-/wiki"
+keywords = []
+license = "MIT"
+name = "decanter"
+readme = "https://gitlab.com/crsty/crates/decanter#README"
+repository = "https://gitlab.com/crsty/crates/decanter"
+version = "0.1.1"
+
+[features]
+default = []
+
+[lib]
+bench = false
+crate-type = ["cdylib", "rlib"]
+test = true
+
+[[test]]
+name = "core"
+path = "tests/core.rs"
+
+[dependencies]
+decanter-slv = { optional = true, path = "../slv", version = "0.1.0" }
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
