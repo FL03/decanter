@@ -5,7 +5,11 @@
         ... Summary ...
 */
 
-pub struct Sleeve {
-    
+pub enum SleeveContext {
+    ED25519,
+    H260
 }
+
+pub struct Sleeve;
+
 
