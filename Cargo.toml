@@ -1,11 +1,11 @@
 [workspace]
 default-members = [
-    "decanter",
-    "slv"
+    "decanter"
 ]
 members = [
-    "decanter",
-    "slv"
+    "core",
+    "crypto",
+    "decanter"
 ]
 
 [profile.dev]

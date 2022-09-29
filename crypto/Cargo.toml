@@ -1,25 +1,22 @@
 [package]
 authors = ["FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)"]
 categories = []
-description = "decanter"
+description = "decanter-crypto implements quantum-resilient cryptographic protocols"
 edition = "2021"
 homepage = "https://gitlab.com/crsty/crates/decanter/-/wiki"
-keywords = []
+keywords = ["cryptography"]
 license = "MIT"
-name = "decanter"
-readme = "https://gitlab.com/crsty/crates/decanter#README"
+name = "decanter-crypto"
+readme = "README.md"
 repository = "https://gitlab.com/crsty/crates/decanter"
-version = "0.1.1"
+version = "0.1.0"
 
 [features]
-default = ["core"]
-full = ["core"]
-
-core = [
-    "decanter-core",
-    "crypto"
+default = [
+    "sleeves"
 ]
-crypto = ["decanter-crypto/default"]
+
+sleeves = []
 
 [lib]
 bench = false
@@ -27,8 +24,7 @@ crate-type = ["cdylib", "rlib"]
 test = true
 
 [dependencies]
-decanter-core = { optional = true, path = "../core", version = "0.1.0" }
-decanter-crypto = { optional = true, path = "../crypto", version = "0.1.0" }
+serde = { default-features = false, features = ["derive"], version = "1.0.145" }
 
 [package.metadata.docs.rs]
 all-features = true

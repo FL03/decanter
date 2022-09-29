@@ -1,4 +1,4 @@
-# slv
+# decanter
 
 ## Concepts
 
@@ -7,14 +7,13 @@
 ### Tweakable Hash Functions
 
 
-
 ## Contributors
 
 ### Getting Started
 
 #### _Clone the repository_
 
-    git clone https://gitlab.com/crsty/crates/slv
+    git clone https://gitlab.com/crsty/crates/decanter
 
 
     cd slv && cargo build --workspace
