@@ -3,9 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description:  ... Summary ...
 */
-#[cfg(feature = "derive")]
 #[cfg(test)]
+
+#[cfg(feature = "derive")]
 use decanter::prelude::{Hash, Hashable};
+
 use scsys::prelude::Timestamp;
 use serde::{Deserialize, Serialize};
 
@@ -20,10 +22,7 @@ impl std::fmt::Display for TestStruct {
     }
 }
 
-
-#[derive(Default)]
-struct Pancakes;
-
+#[cfg(feature = "derive")]
 #[test]
 fn test_hashable_derive() {
     let a = TestStruct::default();

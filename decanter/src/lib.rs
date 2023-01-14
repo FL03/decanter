@@ -11,7 +11,7 @@ pub use decanter_crypto as crypto;
 pub use decanter_derive::*;
 
 pub mod prelude {
-    pub use super::*;
     #[cfg(feature = "crypto")]
     pub use super::crypto::*;
+    pub use super::*;
 }
