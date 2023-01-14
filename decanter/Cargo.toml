@@ -1,34 +1,35 @@
 [package]
 authors = ["FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)"]
 categories = []
-description = "decanter"
+description = "This crate implements basic cryptographic primitives native to the ecosystem"
 edition = "2021"
-homepage = "https://gitlab.com/crsty/crates/decanter/-/wiki"
+homepage = "https://github.com/FL03/decanter/wiki"
 keywords = []
-license = "MIT"
+license = "Apache-2.0"
 name = "decanter"
-readme = "https://gitlab.com/crsty/crates/decanter#README"
-repository = "https://gitlab.com/crsty/crates/decanter"
+repository = "https://github.com/FL03/decanter"
 version = "0.1.1"
 
 [features]
-default = ["core"]
-full = ["core"]
+default = ["core", "crypto"]
+full = ["core", "crypto", "derive"]
 
-core = [
-    "decanter-core",
-    "crypto"
-]
+core = []
 crypto = ["decanter-crypto/default"]
+derive = ["decanter-derive"]
 
 [lib]
 bench = false
 crate-type = ["cdylib", "rlib"]
 test = true
 
+[dev-dependencies]
+scsys = "0.1.40"
+serde = { features = ["derive"], version = "1" }
+
 [dependencies]
-decanter-core = { optional = true, path = "../core", version = "0.1.0" }
-decanter-crypto = { optional = true, path = "../crypto", version = "0.1.0" }
+decanter-crypto = { optional = true, path = "../crypto", version = "0.1.1" }
+decanter-derive = { optional = true, path = "../derive", version = "0.1.1" }
 
 [package.metadata.docs.rs]
 all-features = true

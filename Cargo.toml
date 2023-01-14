@@ -2,10 +2,11 @@
 default-members = [
     "decanter"
 ]
+exclude = ["xtask"]
 members = [
-    "core",
     "crypto",
-    "decanter"
+    "decanter",
+    "derive"
 ]
 
 [profile.dev]
