@@ -10,6 +10,8 @@ on:
   push:
     branches: [ "main", "master", "prod*" ]
     tags: [ "nightly*",  "v*.*.*" ]
+  release:
+    types: [ created ]
   schedule:
     - cron: "30 9 * * *"
   workflow_dispatch:
@@ -35,7 +37,7 @@ jobs:
       - run: cargo build -v --workspace
       - run: cargo test --all --all-features -v
   features:
-    if: ${{ github.event.inputs.publish }}
+    if: ${{ github.event.inputs.publish }} || ${{ github.event.release.created }}
     name: Features
     runs-on: ubuntu-latest
     strategy:
@@ -48,7 +50,7 @@ jobs:
       - name: Publish (${{matrix.package}})
         run: cargo publish --all-features -v -p ${{ matrix.package }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
   publish:
-    if: ${{ github.event.inputs.publish }}
+    if: ${{ github.event.inputs.publish }} || ${{ github.event.release.created }}
     name: Publish
     needs: features
     runs-on: ubuntu-latest
