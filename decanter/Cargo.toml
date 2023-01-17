@@ -17,7 +17,7 @@ full = ["crypto", "derive"]
 crypto = ["decanter-crypto/default"]
 derive = ["decanter-derive"]
 
-wasm = []
+wasm = ["decanter-crypto/wasm"]
 
 [lib]
 bench = false
