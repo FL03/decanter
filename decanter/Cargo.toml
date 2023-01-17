@@ -8,15 +8,16 @@ keywords = []
 license = "Apache-2.0"
 name = "decanter"
 repository = "https://github.com/FL03/decanter"
-version = "0.1.1"
+version = "0.1.2"
 
 [features]
-default = ["core", "crypto"]
-full = ["core", "crypto", "derive"]
+default = ["crypto"]
+full = ["crypto", "derive"]
 
-core = []
 crypto = ["decanter-crypto/default"]
 derive = ["decanter-derive"]
+
+wasm = ["decanter-crypto/wasm"]
 
 [lib]
 bench = false
@@ -28,9 +29,13 @@ scsys = "0.1.40"
 serde = { features = ["derive"], version = "1" }
 
 [dependencies]
-decanter-crypto = { optional = true, path = "../crypto", version = "0.1.1" }
-decanter-derive = { optional = true, path = "../derive", version = "0.1.1" }
+decanter-crypto = { features = ["wasm"], optional = true, path = "../crypto", version = "0.1.2" }
+decanter-derive = { optional = true, path = "../derive", version = "0.1.2" }
 
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]
