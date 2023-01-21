@@ -2,6 +2,8 @@
 
 [![Clippy](https://github.com/FL03/decanter/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/decanter/actions/workflows/clippy.yml)
 [![Rust](https://github.com/FL03/decanter/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/decanter/actions/workflows/rust.yml)
+[![crates.io](https://img.shields.io/crates/v/decanter.svg)](https://crates.io/crates/decanter)
+[![docs.rs](https://docs.rs/decanter/badge.svg)](https://docs.rs/decanter)
 
 ***
 
@@ -9,7 +11,7 @@ Welcome to decanter
 
 ## Getting Started
 
-Use Rust's built-in package manager [crates](https://crates.io/crates/scsys) to install *scsys*.
+Use Rust's built-in package manager [crates](https://crates.io/crates/decanter) to add *decanter*.
 
 ### Building from the source
 
@@ -23,21 +25,25 @@ cd scsys
 #### *Build the workspace locally*
 
 ```bash
-cargo xtask build 
+cargo build --release --workspace
 ```
 
-or 
+or
 
 ```bash
-cargo xtask build --release
+cargo build -F wasm --release --target wasm32-unknown-unknown --workspace
 ```
 
-#### *Auto*
-
-Automatically format and analyze the codebase before building then testing.
+#### *Testing*
 
 ```bash
-cargo xtask auto
+cargo test --all -F full --release
+```
+
+or
+
+```bash
+cargo test --all -F wasm --release --target wasm32-unknown-unknown
 ```
 
 ## Usage
