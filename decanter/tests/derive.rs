@@ -4,7 +4,6 @@
     Description:  ... Summary ...
 */
 #[cfg(test)]
-
 #[cfg(feature = "derive")]
 use decanter::prelude::{Hash, Hashable};
 
