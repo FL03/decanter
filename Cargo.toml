@@ -1,16 +1,20 @@
 [workspace.package]
-authors = ["FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)"]
+authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)"]
+categories = []
+description = "This crate implements basic cryptographic primitives native to the ecosystem"
 edition = "2021"
 homepage = "https://github.com/FL03/decanter/wiki"
+keywords = ["cryptography", "hash"]
 license = "Apache-2.0"
+readme = "README.md"
 repository = "https://github.com/FL03/decanter"
-version = "0.1.3"
+version = "0.1.4"
 
 [workspace]
 default-members = [
     "decanter"
 ]
-exclude = ["xtask"]
+exclude = []
 members = [
     "crypto",
     "decanter",
