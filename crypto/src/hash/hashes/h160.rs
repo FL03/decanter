@@ -1,8 +1,7 @@
 /*
     Appellation: h160 <module>
     Contributors: FL03 <jo3mccain@icloud.com>
-    Description:
-        ... Summary ...
+    Description: ... Summary ...
 */
 use super::H256;
 use crate::{H160Hash, Hashable};
@@ -10,7 +9,7 @@ use crate::{H160Hash, Hashable};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Copy, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct H160(pub H160Hash); // big endian u256
 
 impl H160 {
@@ -29,36 +28,6 @@ impl H160 {
 impl Hashable for H160 {
     fn hash(&self) -> H256 {
         (*self).into()
-    }
-}
-
-impl std::convert::From<&H160Hash> for H160 {
-    fn from(input: &H160Hash) -> H160 {
-        let mut buffer: H160Hash = [0; 20];
-        buffer[..].copy_from_slice(input);
-        H160(buffer)
-    }
-}
-
-impl std::convert::From<H160Hash> for H160 {
-    fn from(input: H160Hash) -> H160 {
-        H160(input)
-    }
-}
-
-impl std::convert::From<&H256> for H160 {
-    fn from(input: &H256) -> H160 {
-        let mut buffer: H160Hash = [0; 20];
-        buffer[..].copy_from_slice(&input.0[0..20]);
-        buffer.into()
-    }
-}
-
-impl std::convert::From<H256> for H160 {
-    fn from(input: H256) -> H160 {
-        let mut buffer: H160Hash = [0; 20];
-        buffer[..].copy_from_slice(&input.0[0..20]);
-        buffer.into()
     }
 }
 
@@ -90,14 +59,45 @@ impl std::fmt::Display for H160 {
     }
 }
 
+impl From<&H160Hash> for H160 {
+    fn from(input: &H160Hash) -> H160 {
+        let mut buffer: H160Hash = [0; 20];
+        buffer[..].copy_from_slice(input);
+        H160(buffer)
+    }
+}
+
+impl From<H160Hash> for H160 {
+    fn from(input: H160Hash) -> H160 {
+        H160(input)
+    }
+}
+
+impl From<&H256> for H160 {
+    fn from(input: &H256) -> H160 {
+        let mut buffer: H160Hash = [0; 20];
+        buffer[..].copy_from_slice(&input.0[0..20]);
+        buffer.into()
+    }
+}
+
+impl From<H256> for H160 {
+    fn from(input: H256) -> H160 {
+        let mut buffer: H160Hash = [0; 20];
+        buffer[..].copy_from_slice(&input.0[0..20]);
+        buffer.into()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::H256;
 
     #[test]
     fn test_h160_random() {
         let a = H160::generate();
-        let b = H160::from(crate::hash::generate_random_hash());
+        let b = H160::from(H256::generate());
         assert_ne!(a, b)
     }
 }
