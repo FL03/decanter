@@ -11,7 +11,7 @@ extern crate syn;
 use proc_macro::TokenStream;
 use syn::{parse_macro_input, DeriveInput};
 
-#[proc_macro_derive(Hash)]
+#[proc_macro_derive(Hashable)]
 pub fn hashable(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
     let gen = impl_hashable(&ast);
