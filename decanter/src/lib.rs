@@ -20,7 +20,7 @@ mod utils;
 
 pub mod prelude {
     pub use blake3;
-    
+
     pub use super::*;
 
     pub use super::hash::*;

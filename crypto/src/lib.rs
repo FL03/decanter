@@ -1,11 +1,12 @@
 /*
-    Appellation: decanter-crypto <library>
+    Appellation: crypto <library>
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... summary ...
 */
 #[doc(inline)]
-pub use self::{keys::*, primitives::*, utils::*};
+pub use self::{primitives::*, utils::*};
 
-pub(crate) mod keys;
 mod primitives;
 mod utils;
+
+pub mod keys;

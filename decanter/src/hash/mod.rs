@@ -10,39 +10,84 @@ mod iter;
 
 use crate::GenericHash;
 
-
 /// [Hashable] is a trait that defines a hashable object
 pub trait Hashable: ToString {
-    fn hash(&self) -> H256;
+    fn hash(&self) -> H256 {
+        hasher(self.to_string().as_bytes()).into()
+    }
 }
 
-///
-pub trait HashableExt: Hashable {
-    fn hasher(&self, deg: Option<usize>) -> H256 {
-        let s: H256 = hasher(&self.to_string()).into();
+impl Hashable for char {}
 
-        let mut res: H256 = s;
+impl Hashable for String {}
+
+impl Hashable for &str {}
+
+impl Hashable for u8 {}
+
+impl Hashable for u16 {}
+
+impl Hashable for u32 {}
+
+impl Hashable for u64 {}
+
+impl Hashable for u128 {}
+
+impl Hashable for usize {}
+
+impl Hashable for i8 {}
+
+impl Hashable for i16 {}
+
+impl Hashable for i32 {}
+
+impl Hashable for i64 {}
+
+impl Hashable for i128 {}
+
+impl Hashable for isize {}
+
+impl Hashable for bool {}
+
+impl Hashable for f32 {}
+
+impl Hashable for f64 {}
+
+///
+pub trait Hasher {
+    fn hasher(data: impl AsRef<[u8]>) -> GenericHash {
+        blake3::hash(data.as_ref()).as_bytes().to_owned().into()
+    }
+    fn hash_to_deg(data: impl AsRef<[u8]>, deg: Option<usize>) -> GenericHash {
+        let hs = Self::hasher(data);
+        let mut res: GenericHash = hs;
         for _ in 0..deg.unwrap_or(1) {
-            res = hasher(&res.clone()).into()
+            res = Self::hasher(res);
         }
         res
     }
 }
 
 /// hasher implements a generic hash function wrapper around blake3
-pub fn hasher(data: &impl ToString) -> GenericHash {
-    blake3::hash(data.to_string().as_bytes())
-        .as_bytes()
-        .to_owned()
-        .into()
+pub fn hasher(data: impl AsRef<[u8]>) -> GenericHash {
+    blake3::hash(data.as_ref()).as_bytes().to_owned().into()
 }
 /// Given a collection of elements, reduce into a single hash by updating the same hasher
-pub fn iter_hasher<T: ToString>(data: &Vec<T>) -> GenericHash {
+pub fn iter_hasher(data: &Vec<impl AsRef<[u8]>>) -> GenericHash {
     let mut hasher = blake3::Hasher::default();
     for i in data {
-        hasher.update(i.to_string().as_bytes());
+        hasher.update(i.clone().as_ref());
     }
     hasher.finalize().as_bytes().to_owned().into()
+}
+
+pub fn hash_to_deg(data: impl AsRef<[u8]>, deg: Option<usize>) -> GenericHash {
+    let hs = hasher(data);
+    let mut res: GenericHash = hs;
+    for _ in 0..deg.unwrap_or(1) {
+        res = hasher(res);
+    }
+    res
 }
 
 #[cfg(test)]

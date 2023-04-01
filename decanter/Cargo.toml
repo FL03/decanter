@@ -18,32 +18,28 @@ full = ["crypto", "derive"]
 crypto = ["decanter-crypto/default"]
 derive = ["decanter-derive"]
 
-wasm = ["decanter-crypto/wasm"]
+wasm = [
+    "decanter-crypto/wasm",
+    "wasm-ext"
+]
 wasm-ext = [
-    "ring/wasm32_c",
+    "getrandom/js",
 ]
 
 [lib]
-bench = false
+bench = true
 crate-type = ["cdylib", "rlib"]
 test = true
-
-[dev-dependencies]
-scsys = "0.1.41"
-serde.workspace = true
 
 [dependencies]
 decanter-crypto = { features = ["wasm"], optional = true, path = "../crypto", version = "0.1.4" }
 decanter-derive = { optional = true, path = "../derive", version = "0.1.4" }
 
 blake3 = "1.3"
-ed25519 = { features = ["pkcs8", "serde_bytes"], version = "2.2" }
 generic-array = "0.14"
-hex = "0.4"
-hex-literal = "0.3"
-itertools = "0.10"
+getrandom = { features = ["js"], version = "0.2" }
 rand = "0.8"
-ring = { features = ["wasm32_c"], version = "0.16" }
+ring = "0.16"
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true

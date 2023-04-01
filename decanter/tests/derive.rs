@@ -6,28 +6,28 @@
 #[cfg(test)]
 #[cfg(feature = "derive")]
 mod tests {
-    use super::*;
-    use decanter::prelude::Hashable;
+    use decanter::prelude::{hasher, Hashable, H256};
 
-    use scsys::prelude::Timestamp;
-    use serde::{Deserialize, Serialize};
-
-    #[derive(Default, Hashable, Deserialize, Serialize)]
+    #[derive(Clone, Debug, Default, Hashable)]
     pub struct TestStruct {
-        timestamp: Timestamp,
+        id: i64,
+    }
+
+    impl TestStruct {
+        pub fn new(id: i64) -> Self {
+            Self { id }
+        }
     }
 
     impl std::fmt::Display for TestStruct {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{}", self.timestamp)
+            write!(f, "{}", self.id)
         }
     }
 
     #[test]
     fn test_hashable_derive() {
-        let a = TestStruct::default();
-        let _hash = a.hash();
-        let _string = a.to_string();
-        assert!(true)
+        let a = TestStruct::new(0_i64);
+        assert_eq!(a.hash(), hasher(0_i64.to_string()).into());
     }
 }

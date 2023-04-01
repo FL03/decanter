@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
-use super::{H256Hash, H160};
-use crate::{hash::Hashable, GenericHash};
+use crate::hash::{H256Hash, Hashable, Hasher, H160};
+use crate::GenericHash;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -23,6 +23,12 @@ impl H256 {
         raw_bytes.copy_from_slice(&random_bytes);
         (&raw_bytes).into()
     }
+    pub fn hasher(data: &[u8]) -> Self {
+        let mut hasher = blake3::Hasher::new();
+        hasher.update(data);
+        let hash = hasher.finalize();
+        hash.as_bytes().into()
+    }
 }
 
 impl Hashable for H256 {
@@ -30,6 +36,8 @@ impl Hashable for H256 {
         *self
     }
 }
+
+impl Hasher for H256 {}
 
 impl Ord for H256 {
     fn cmp(&self, other: &H256) -> std::cmp::Ordering {

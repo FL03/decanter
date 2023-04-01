@@ -25,7 +25,7 @@ fn impl_hashable(ast: &DeriveInput) -> proc_macro2::TokenStream {
     let res = quote::quote! {
         impl decanter::hash::Hashable for #ident {
             fn hash(&self) -> decanter::hash::H256 {
-                decanter::hash::hasher(&self).into()
+                decanter::hash::hasher(self.to_string()).into()
             }
         }
     };

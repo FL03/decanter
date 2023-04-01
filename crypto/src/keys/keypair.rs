@@ -4,31 +4,33 @@
     Description:
         ... Summary ...
 */
-use crate::keys::generate_random_pkcs8;
+use crate::generate_random_pkcs8;
 use ring::{pkcs8, rand::SystemRandom, signature::Ed25519KeyPair};
 
 #[derive(Debug)]
-pub struct Keypair(Ed25519KeyPair);
+pub struct Keypair {
+    keypair: Ed25519KeyPair,
+}
 
 impl Keypair {
-    pub fn new(data: Ed25519KeyPair) -> Self {
-        Self(data)
+    pub fn new(keypair: Ed25519KeyPair) -> Self {
+        Self { keypair }
     }
     pub fn generate() -> Self {
         Self::from(generate_random_pkcs8())
     }
     pub fn keypair(&self) -> &Ed25519KeyPair {
-        &self.0
+        &self.keypair
     }
 }
 
-impl std::convert::From<&[u8]> for Keypair {
+impl From<&[u8]> for Keypair {
     fn from(data: &[u8]) -> Self {
         Self::new(Ed25519KeyPair::from_pkcs8(data).expect(""))
     }
 }
 
-impl std::convert::From<pkcs8::Document> for Keypair {
+impl From<pkcs8::Document> for Keypair {
     fn from(data: pkcs8::Document) -> Self {
         Self::from(data.as_ref())
     }
