@@ -3,10 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
-use crate::{
-    hash::{generate_random_hash, H160},
-    GenericHash, H256Hash, Hashable,
-};
+use crate::hash::{H256Hash, Hashable, Hasher, H160};
+use crate::GenericHash;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 /// A SHA256 hash.
@@ -18,13 +17,45 @@ impl H256 {
         Self(data)
     }
     pub fn generate() -> Self {
-        generate_random_hash()
+        let mut rng = rand::thread_rng();
+        let random_bytes: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
+        let mut raw_bytes = [0; 32];
+        raw_bytes.copy_from_slice(&random_bytes);
+        (&raw_bytes).into()
+    }
+    pub fn hasher(data: &[u8]) -> Self {
+        let mut hasher = blake3::Hasher::new();
+        hasher.update(data);
+        let hash = hasher.finalize();
+        hash.as_bytes().into()
     }
 }
 
 impl Hashable for H256 {
     fn hash(&self) -> H256 {
         *self
+    }
+}
+
+impl Hasher for H256 {}
+
+impl Ord for H256 {
+    fn cmp(&self, other: &H256) -> std::cmp::Ordering {
+        let self_higher = u128::from_be_bytes(self.0[0..16].try_into().unwrap());
+        let self_lower = u128::from_be_bytes(self.0[16..32].try_into().unwrap());
+        let other_higher = u128::from_be_bytes(other.0[0..16].try_into().unwrap());
+        let other_lower = u128::from_be_bytes(other.0[16..32].try_into().unwrap());
+        let higher = self_higher.cmp(&other_higher);
+        match higher {
+            std::cmp::Ordering::Equal => self_lower.cmp(&other_lower),
+            _ => higher,
+        }
+    }
+}
+
+impl PartialOrd for H256 {
+    fn partial_cmp(&self, other: &H256) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -56,13 +87,13 @@ impl std::fmt::Display for H256 {
     }
 }
 
-impl std::convert::AsRef<[u8]> for H256 {
+impl AsRef<[u8]> for H256 {
     fn as_ref(&self) -> &[u8] {
         &self.0
     }
 }
 
-impl std::convert::From<&[u8; 32]> for H256 {
+impl From<&[u8; 32]> for H256 {
     fn from(input: &[u8; 32]) -> H256 {
         let mut buffer: [u8; 32] = [0; 32];
         buffer[..].copy_from_slice(input);
@@ -70,13 +101,13 @@ impl std::convert::From<&[u8; 32]> for H256 {
     }
 }
 
-impl std::convert::From<GenericHash> for H256 {
+impl From<GenericHash> for H256 {
     fn from(data: GenericHash) -> H256 {
         data.as_slice().to_owned().into()
     }
 }
 
-impl std::convert::From<&H256> for [u8; 32] {
+impl From<&H256> for [u8; 32] {
     fn from(input: &H256) -> [u8; 32] {
         let mut buffer: [u8; 32] = [0; 32];
         buffer[..].copy_from_slice(&input.0);
@@ -84,13 +115,13 @@ impl std::convert::From<&H256> for [u8; 32] {
     }
 }
 
-impl std::convert::From<[u8; 32]> for H256 {
+impl From<[u8; 32]> for H256 {
     fn from(input: [u8; 32]) -> H256 {
         H256(input)
     }
 }
 
-impl std::convert::From<H160> for H256 {
+impl From<H160> for H256 {
     fn from(input: H160) -> H256 {
         let mut buffer: H256Hash = [0; 32];
         buffer[..].copy_from_slice(&input.0[0..20]);
@@ -98,13 +129,13 @@ impl std::convert::From<H160> for H256 {
     }
 }
 
-impl std::convert::From<H256> for [u8; 32] {
+impl From<H256> for [u8; 32] {
     fn from(input: H256) -> [u8; 32] {
         input.0
     }
 }
 
-impl std::convert::From<Vec<u8>> for H256 {
+impl From<Vec<u8>> for H256 {
     fn from(input: Vec<u8>) -> H256 {
         let mut raw_hash: [u8; 32] = [0; 32];
         raw_hash[0..32].copy_from_slice(input.as_ref());
@@ -112,7 +143,7 @@ impl std::convert::From<Vec<u8>> for H256 {
     }
 }
 
-impl std::convert::From<ring::digest::Digest> for H256 {
+impl From<ring::digest::Digest> for H256 {
     fn from(input: ring::digest::Digest) -> H256 {
         let mut raw_hash: [u8; 32] = [0; 32];
         raw_hash[0..32].copy_from_slice(input.as_ref());
@@ -159,26 +190,6 @@ impl std::ops::Mul<f64> for H256 {
             result_bytes[4 * (n - 1) + 3] = results[3];
         }
         (&result_bytes).into()
-    }
-}
-
-impl Ord for H256 {
-    fn cmp(&self, other: &H256) -> std::cmp::Ordering {
-        let self_higher = u128::from_be_bytes(self.0[0..16].try_into().unwrap());
-        let self_lower = u128::from_be_bytes(self.0[16..32].try_into().unwrap());
-        let other_higher = u128::from_be_bytes(other.0[0..16].try_into().unwrap());
-        let other_lower = u128::from_be_bytes(other.0[16..32].try_into().unwrap());
-        let higher = self_higher.cmp(&other_higher);
-        match higher {
-            std::cmp::Ordering::Equal => self_lower.cmp(&other_lower),
-            _ => higher,
-        }
-    }
-}
-
-impl PartialOrd for H256 {
-    fn partial_cmp(&self, other: &H256) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
     }
 }
 

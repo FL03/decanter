@@ -6,5 +6,9 @@
 */
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct PublicKey<T>(T);
+#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct SecretKey {
+    id: String,
+    pub(crate) key: Vec<u8>,
+    ts: i64,
+}

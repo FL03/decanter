@@ -5,27 +5,29 @@
 */
 #[cfg(test)]
 #[cfg(feature = "derive")]
-use decanter::prelude::{Hash, Hashable};
+mod tests {
+    use decanter::prelude::{hasher, Hashable, H256};
 
-use scsys::prelude::Timestamp;
-use serde::{Deserialize, Serialize};
-
-#[derive(Default, Hash, Deserialize, Serialize)]
-pub struct TestStruct {
-    timestamp: Timestamp,
-}
-
-impl std::fmt::Display for TestStruct {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.timestamp)
+    #[derive(Clone, Debug, Default, Hashable)]
+    pub struct TestStruct {
+        id: i64,
     }
-}
 
-#[cfg(feature = "derive")]
-#[test]
-fn test_hashable_derive() {
-    let a = TestStruct::default();
-    let _hash = a.hash();
-    let _string = a.to_string();
-    assert!(true)
+    impl TestStruct {
+        pub fn new(id: i64) -> Self {
+            Self { id }
+        }
+    }
+
+    impl std::fmt::Display for TestStruct {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}", self.id)
+        }
+    }
+
+    #[test]
+    fn test_hashable_derive() {
+        let a = TestStruct::new(0_i64);
+        assert_eq!(a.hash(), hasher(0_i64.to_string()).into());
+    }
 }
