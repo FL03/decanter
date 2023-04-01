@@ -3,8 +3,8 @@
     Contributors: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
-use super::H256;
-use crate::{H160Hash, Hashable};
+use super::{H160Hash, H256};
+use crate::hash::Hashable;
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -92,7 +92,6 @@ impl From<H256> for H160 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::H256;
 
     #[test]
     fn test_h160_random() {

@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
-use super::H160;
-use crate::{GenericHash, H256Hash, Hashable};
+use super::{H256Hash, H160};
+use crate::{hash::Hashable, GenericHash};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
