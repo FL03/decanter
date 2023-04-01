@@ -47,9 +47,6 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Test
         run: cargo test --all -F full --release -v
-      - name: Bench
-        if: matrix.toolchain == 'nightly'
-        run: cargo bench --all -F full --release -v
   features:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.event_name == 'release' && github.event.action == 'created' || github.event.inputs.publish == 'true'
     name: Publish (features)
