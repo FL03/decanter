@@ -38,6 +38,10 @@ strum.workspace = true
 hex = "0.4"
 vrf = "0.2.4"
 
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
 [target.wasm32-unknown-unknown]
 
 [target.wasm32-wasi]

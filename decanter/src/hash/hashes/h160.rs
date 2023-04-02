@@ -16,12 +16,36 @@ impl H160 {
     pub fn new(data: H160Hash) -> Self {
         Self(data)
     }
+    /// Concatenates two hashes.
+    pub fn concat(&mut self, other: &H160) -> &mut Self {
+        let hash = {
+            let mut hasher = blake3::Hasher::new();
+            hasher.update(self.as_ref());
+            hasher.update(other.as_ref());
+            hasher.finalize()
+        };
+        *self = hash.into();
+        self
+    }
+    /// Generate a random [H160] hash.
     pub fn generate() -> Self {
         let mut rng = rand::thread_rng();
         let random_bytes: Vec<u8> = (0..20).map(|_| rng.gen()).collect();
         let mut raw_bytes = [0; 20];
         raw_bytes.copy_from_slice(&random_bytes);
         (&raw_bytes).into()
+    }
+}
+
+impl AsMut<[u8]> for H160 {
+    fn as_mut(&mut self) -> &mut [u8] {
+        &mut self.0
+    }
+}
+
+impl AsRef<[u8]> for H160 {
+    fn as_ref(&self) -> &[u8] {
+        &self.0
     }
 }
 
@@ -59,33 +83,20 @@ impl std::fmt::Display for H160 {
     }
 }
 
-impl From<&H160Hash> for H160 {
-    fn from(input: &H160Hash) -> H160 {
+impl<T> From<&T> for H160
+where
+    T: AsRef<[u8]>,
+{
+    fn from(input: &T) -> H160 {
+        H160::from(blake3::hash(input.as_ref()))
+    }
+}
+
+impl From<blake3::Hash> for H160 {
+    fn from(input: blake3::Hash) -> H160 {
         let mut buffer: H160Hash = [0; 20];
-        buffer[..].copy_from_slice(input);
+        buffer[..].copy_from_slice(&input.as_bytes()[0..20]);
         H160(buffer)
-    }
-}
-
-impl From<H160Hash> for H160 {
-    fn from(input: H160Hash) -> H160 {
-        H160(input)
-    }
-}
-
-impl From<&H256> for H160 {
-    fn from(input: &H256) -> H160 {
-        let mut buffer: H160Hash = [0; 20];
-        buffer[..].copy_from_slice(&input.0[0..20]);
-        buffer.into()
-    }
-}
-
-impl From<H256> for H160 {
-    fn from(input: H256) -> H160 {
-        let mut buffer: H160Hash = [0; 20];
-        buffer[..].copy_from_slice(&input.0[0..20]);
-        buffer.into()
     }
 }
 
@@ -94,9 +105,21 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_h160_random() {
+    fn test_h160() {
         let a = H160::generate();
-        let b = H160::from(H256::generate());
-        assert_ne!(a, b)
+        assert_ne!(a, H160::from(&H256::generate()));
+    }
+
+    #[test]
+    fn test_concat() {
+        let mut a = H160::generate();
+        let b = H160::generate();
+        let mut expected: H160 = {
+            let mut hasher = blake3::Hasher::new();
+            hasher.update(a.clone().as_ref());
+            hasher.update(b.clone().as_ref());
+            hasher.finalize().into()
+        };
+        assert_eq!(a.concat(&b), &mut expected);
     }
 }
