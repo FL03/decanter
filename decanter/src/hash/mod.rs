@@ -53,21 +53,6 @@ impl Hashable for f32 {}
 
 impl Hashable for f64 {}
 
-///
-pub trait Hasher {
-    fn hasher(data: impl AsRef<[u8]>) -> GenericHash {
-        blake3::hash(data.as_ref()).as_bytes().to_owned().into()
-    }
-    fn hash_to_deg(data: impl AsRef<[u8]>, deg: Option<usize>) -> GenericHash {
-        let hs = Self::hasher(data);
-        let mut res: GenericHash = hs;
-        for _ in 0..deg.unwrap_or(1) {
-            res = Self::hasher(res);
-        }
-        res
-    }
-}
-
 /// hasher implements a generic hash function wrapper around blake3
 pub fn hasher(data: impl AsRef<[u8]>) -> GenericHash {
     blake3::hash(data.as_ref()).as_bytes().to_owned().into()
@@ -76,7 +61,7 @@ pub fn hasher(data: impl AsRef<[u8]>) -> GenericHash {
 pub fn iter_hasher(data: &Vec<impl AsRef<[u8]>>) -> GenericHash {
     let mut hasher = blake3::Hasher::default();
     for i in data {
-        hasher.update(i.clone().as_ref());
+        hasher.update(i.as_ref());
     }
     hasher.finalize().as_bytes().to_owned().into()
 }
@@ -97,8 +82,8 @@ mod tests {
 
     #[test]
     fn test_hasher() {
-        let a = hasher(&generate_random_string(None));
-        let b = hasher(&generate_random_string(None));
+        let a = hasher(generate_random_string(None));
+        let b = hasher(generate_random_string(None));
         assert_ne!(&a, &b)
     }
 

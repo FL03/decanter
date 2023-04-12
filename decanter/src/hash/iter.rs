@@ -50,7 +50,7 @@ where
             hasher.update(item.to_string().as_bytes());
         }
         let hash = hasher.finalize();
-        hash.as_bytes().into()
+        hash.into()
     }
 }
 
@@ -152,7 +152,7 @@ mod tests {
 
         for i in data.clone() {
             // Check that each value is hashed correctly
-            assert_eq!(iter.next(), Some(H256::hasher(i.to_string().as_bytes())));
+            assert_eq!(iter.next(), Some(H256::new(i.to_string())));
         }
         // Assert that the hash of the iterator produces a single value
         assert_eq!(
