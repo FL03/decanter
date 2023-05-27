@@ -14,12 +14,7 @@ version.workspace = true
 [features]
 default = []
 
-wasm = [
-    "wasm-ext"
-]
-wasm-ext = [
-
-]
+wasm = []
 
 [lib]
 crate-type = ["cdylib", "rlib"]

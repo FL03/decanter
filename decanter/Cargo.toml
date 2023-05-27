@@ -12,11 +12,20 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["crypto"]
-full = ["crypto", "derive"]
+default = [
+    "crypto"
+]
+full = [
+    "crypto", 
+    "derive"
+]
 
-crypto = ["decanter-crypto/default"]
-derive = ["decanter-derive"]
+crypto = [
+    "decanter-crypto"
+]
+derive = [
+    "decanter-derive"
+]
 
 wasm = [
     "decanter-crypto/wasm",
@@ -33,8 +42,8 @@ test = true
 [build-dependencies]
 
 [dependencies]
-decanter-crypto = { features = ["wasm"], optional = true, path = "../crypto", version = "0.1.5" }
-decanter-derive = { optional = true, path = "../derive", version = "0.1.5" }
+decanter-crypto = { optional = true, path = "../crypto", version = "0.1.6" }
+decanter-derive = { optional = true, path = "../derive", version = "0.1.6" }
 
 blake3 = "1.3"
 generic-array = "0.14"
@@ -51,6 +60,7 @@ typenum = "1"
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
 
-[target.wasm32-unknown-unknown]
+[target.wasm32-unknown-unknown.dependencies]
+getrandom = { features = ["js"], version = "0.2" }
 
 [target.wasm32-wasi]
