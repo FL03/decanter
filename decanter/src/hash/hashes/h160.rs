@@ -1,7 +1,6 @@
 /*
     Appellation: h160 <module>
     Contributors: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
 */
 use super::{H160Hash, H256};
 use crate::hash::Hashable;

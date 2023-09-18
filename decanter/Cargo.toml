@@ -46,7 +46,7 @@ decanter-crypto = { optional = true, path = "../crypto", version = "0.1.6" }
 decanter-derive = { optional = true, path = "../derive", version = "0.1.6" }
 
 blake3 = "1.3"
-generic-array = "0.14"
+generic-array = "1"
 rand = "0.8"
 serde.workspace = true
 serde_json.workspace = true
@@ -55,6 +55,8 @@ strum.workspace = true
 typenum = "1"
 
 [dev-dependencies]
+hex-literal = "0.4"
+lazy_static = "1.4"
 
 [package.metadata.docs.rs]
 all-features = true
