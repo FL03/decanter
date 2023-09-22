@@ -49,7 +49,6 @@ impl Concat for H256 {
 
         blake3::hash(&res).into()
     }
-    
 }
 
 impl Hashable for H256 {
@@ -142,8 +141,6 @@ where
         H256(buffer)
     }
 }
-
-
 
 impl From<[u8; 32]> for H256 {
     fn from(input: [u8; 32]) -> H256 {
@@ -390,7 +387,7 @@ impl ops::IndexMut<ops::Range<usize>> for H256 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::hash::concat_hashes;
+    use crate::hash::concat_b3;
 
     #[test]
     fn test_h256() {
@@ -403,7 +400,7 @@ mod tests {
     fn test_concat() {
         let mut a = H256::generate();
         let b = H256::generate();
-        let expected: H256 = concat_hashes(&a, &b).into();
+        let expected: H256 = concat_b3(a.into(), Some(b.into())).into();
         assert_eq!(a.concat(&b), expected);
     }
 

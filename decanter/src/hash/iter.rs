@@ -56,7 +56,10 @@ where
     }
 }
 
-impl<T> Hasher for Iter<T> where T: Hashable {
+impl<T> Hasher for Iter<T>
+where
+    T: Hashable,
+{
     type Hash = H256;
 }
 

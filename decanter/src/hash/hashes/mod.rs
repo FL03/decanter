@@ -2,10 +2,11 @@
     Appellation: hashes <module>
     Contributors: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{h160::*, h256::*};
+pub use self::{h160::*, h256::*, hash::*};
 
 mod h160;
 mod h256;
+mod hash;
 
 use super::GenericHash;
 
@@ -18,14 +19,6 @@ pub trait Concat {
     fn concat(&mut self, other: &Self) -> Self;
 }
 
-pub trait BHash {
-    const DIGEST_LEN: usize;
-
-    fn hash(&self) -> H256;
-}
-
-
-
 ///
 pub trait Hasher {
     type Hash: AsRef<[u8]>;
@@ -33,7 +26,7 @@ pub trait Hasher {
     fn hash(data: impl AsRef<[u8]>) -> GenericHash {
         blake3::hash(data.as_ref()).as_bytes().to_owned().into()
     }
-    
+
     fn hash_to_deg(data: impl AsRef<[u8]>, deg: Option<usize>) -> GenericHash {
         let hs = Self::hash(data);
         let mut res: GenericHash = hs;

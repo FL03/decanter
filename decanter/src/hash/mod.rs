@@ -23,13 +23,11 @@ pub type GenericHashOutput = UInt<UInt<UInt<UInt<UInt<UInt<UTerm, B1>, B0>, B0>,
 pub type GenericHash<T = u8, Output = GenericHashOutput> = GenericArray<T, Output>;
 
 pub trait Hash {
-
     fn hash(data: impl AsRef<[u8]>) -> Self;
 }
 
 /// [Hashable] is a trait that defines a hashable object
 pub trait Hashable: ToString {
-    
     fn hash(&self) -> H256 {
         blake3::hash(self.to_string().as_bytes()).into()
     }
