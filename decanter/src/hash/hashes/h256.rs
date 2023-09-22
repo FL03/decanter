@@ -143,23 +143,17 @@ where
     }
 }
 
-impl From<GenericHash> for H256 {
-    fn from(data: GenericHash) -> H256 {
-        data.as_slice().to_owned().into()
-    }
-}
 
-impl From<H160> for H256 {
-    fn from(input: H160) -> H256 {
-        let mut buffer: H256Hash = [0; 32];
-        buffer[..].copy_from_slice(&input.0[0..20]);
-        buffer.into()
-    }
-}
 
 impl From<[u8; 32]> for H256 {
     fn from(input: [u8; 32]) -> H256 {
         H256::from_iter(input.to_vec())
+    }
+}
+
+impl From<H256> for [u8; 32] {
+    fn from(input: H256) -> [u8; 32] {
+        input.0
     }
 }
 
@@ -171,11 +165,51 @@ impl From<Vec<u8>> for H256 {
     }
 }
 
+impl From<H256> for Vec<u8> {
+    fn from(input: H256) -> Vec<u8> {
+        input.0.to_vec()
+    }
+}
+
 impl From<blake3::Hash> for H256 {
     fn from(input: blake3::Hash) -> H256 {
         let mut raw_hash: [u8; 32] = [0; 32];
         raw_hash[0..32].copy_from_slice(input.as_bytes());
         H256(raw_hash)
+    }
+}
+
+impl From<H256> for blake3::Hash {
+    fn from(input: H256) -> blake3::Hash {
+        blake3::Hash::from(input.0)
+    }
+}
+
+impl From<GenericHash> for H256 {
+    fn from(data: GenericHash) -> H256 {
+        data.as_slice().to_owned().into()
+    }
+}
+
+impl From<H256> for GenericHash {
+    fn from(input: H256) -> GenericHash {
+        GenericHash::from(input.0)
+    }
+}
+
+impl From<H160> for H256 {
+    fn from(input: H160) -> H256 {
+        let mut buffer: H256Hash = [0; 32];
+        buffer[..].copy_from_slice(&input.0[0..20]);
+        buffer.into()
+    }
+}
+
+impl From<H256> for H160 {
+    fn from(input: H256) -> H160 {
+        let mut buffer: super::H160Hash = [0; 20];
+        buffer[..].copy_from_slice(&input.0[0..20]);
+        buffer.into()
     }
 }
 

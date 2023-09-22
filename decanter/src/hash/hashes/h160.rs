@@ -94,6 +94,32 @@ where
     }
 }
 
+impl From<[u8; 20]> for H160 {
+    fn from(input: [u8; 20]) -> H160 {
+        H160(input)
+    }
+}
+
+impl From<H160> for [u8; 20] {
+    fn from(input: H160) -> [u8; 20] {
+        input.0
+    }
+}
+
+impl From<Vec<u8>> for H160 {
+    fn from(input: Vec<u8>) -> H160 {
+        let mut buffer: H160Hash = [0; 20];
+        buffer[..].copy_from_slice(&input[0..20]);
+        H160(buffer)
+    }
+}
+
+impl From<H160> for Vec<u8> {
+    fn from(input: H160) -> Vec<u8> {
+        input.0.to_vec()
+    }
+}
+
 impl From<blake3::Hash> for H160 {
     fn from(input: blake3::Hash) -> H160 {
         let mut buffer: H160Hash = [0; 20];
