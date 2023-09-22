@@ -2,11 +2,12 @@
     Appellation: h160 <module>
     Contributors: FL03 <jo3mccain@icloud.com>
 */
-use super::{H160Hash, H256};
+use super::{Concat, H160Hash, H256};
 use crate::hash::Hashable;
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use std::ops;
 
 #[derive(Clone, Copy, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct H160(pub H160Hash); // big endian u256
@@ -14,17 +15,6 @@ pub struct H160(pub H160Hash); // big endian u256
 impl H160 {
     pub fn new(data: H160Hash) -> Self {
         Self(data)
-    }
-    /// Concatenates two hashes.
-    pub fn concat(&mut self, other: &H160) -> &mut Self {
-        let hash = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(self.as_ref());
-            hasher.update(other.as_ref());
-            hasher.finalize()
-        };
-        *self = hash.into();
-        self
     }
     /// Generate a random [H160] hash.
     pub fn generate() -> Self {
@@ -45,6 +35,19 @@ impl AsMut<[u8]> for H160 {
 impl AsRef<[u8]> for H160 {
     fn as_ref(&self) -> &[u8] {
         &self.0
+    }
+}
+
+impl Concat for H160 {
+    fn concat(&mut self, other: &H160) -> &mut Self {
+        let hash = {
+            let mut hasher = blake3::Hasher::new();
+            hasher.update(self.as_ref());
+            hasher.update(other.as_ref());
+            hasher.finalize()
+        };
+        *self = hash.into();
+        self
     }
 }
 
@@ -96,6 +99,34 @@ impl From<blake3::Hash> for H160 {
         let mut buffer: H160Hash = [0; 20];
         buffer[..].copy_from_slice(&input.as_bytes()[0..20]);
         H160(buffer)
+    }
+}
+
+impl ops::Index<usize> for H160 {
+    type Output = u8;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::Index<ops::Range<usize>> for H160 {
+    type Output = [u8];
+
+    fn index(&self, index: ops::Range<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::IndexMut<usize> for H160 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.0[index]
+    }
+}
+
+impl ops::IndexMut<ops::Range<usize>> for H160 {
+    fn index_mut(&mut self, index: ops::Range<usize>) -> &mut Self::Output {
+        &mut self.0[index]
     }
 }
 

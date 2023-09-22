@@ -2,7 +2,7 @@
     Appellation: h256 <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{H256Hash, Hasher, H160};
+use super::{Concat, H256Hash, Hasher, H160};
 use crate::hash::{GenericHash, Hashable};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -16,23 +16,16 @@ impl H256 {
     pub fn new(data: impl AsRef<[u8]>) -> Self {
         H256::from(blake3::hash(data.as_ref()))
     }
-    /// Concatenates two hashes.
-    pub fn concat(&mut self, other: &H256) -> &mut Self {
-        let hash = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(self.as_ref());
-            hasher.update(other.as_ref());
-            hasher.finalize()
-        };
-        self.0 = hash.into();
-        self
-    }
     pub fn generate() -> Self {
         let mut rng = rand::thread_rng();
         let random_bytes: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
         let mut raw_bytes = [0; 32];
         raw_bytes.copy_from_slice(&random_bytes);
         (&raw_bytes).into()
+    }
+
+    pub const fn as_bytes(&self) -> &[u8; 32] {
+        &self.0
     }
 }
 
@@ -45,6 +38,19 @@ impl AsMut<[u8]> for H256 {
 impl AsRef<[u8]> for H256 {
     fn as_ref(&self) -> &[u8] {
         &self.0
+    }
+}
+
+impl Concat for H256 {
+    fn concat(&mut self, other: &H256) -> &mut Self {
+        let hash = {
+            let mut hasher = blake3::Hasher::new();
+            hasher.update(self.as_ref());
+            hasher.update(other.as_ref());
+            hasher.finalize()
+        };
+        self.0 = hash.into();
+        self
     }
 }
 
@@ -333,9 +339,24 @@ impl ops::IndexMut<usize> for H256 {
     }
 }
 
+impl ops::Index<ops::Range<usize>> for H256 {
+    type Output = [u8];
+
+    fn index(&self, index: ops::Range<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::IndexMut<ops::Range<usize>> for H256 {
+    fn index_mut(&mut self, index: ops::Range<usize>) -> &mut Self::Output {
+        &mut self.0[index]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::hash::concat_hashes;
 
     #[test]
     fn test_h256() {
@@ -348,12 +369,7 @@ mod tests {
     fn test_concat() {
         let mut a = H256::generate();
         let b = H256::generate();
-        let mut expected: H256 = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(a.clone().as_ref());
-            hasher.update(b.clone().as_ref());
-            hasher.finalize().into()
-        };
+        let mut expected: H256 = concat_hashes(&a, &b).into();
         assert_eq!(a.concat(&b), &mut expected);
     }
 

@@ -68,19 +68,19 @@ impl Hashable for f64 {}
 pub(crate) mod utils {
     use super::GenericHash;
 
+    pub fn concat_hashes(a: &impl AsRef<[u8]>, b: &impl AsRef<[u8]>) -> GenericHash {
+        let mut hasher = blake3::Hasher::new();
+        hasher.update(a.as_ref());
+        hasher.update(b.as_ref());
+        hasher.finalize().as_bytes().to_owned().into()
+    }
+
     /// hasher implements a generic hash function wrapper around blake3
     pub fn hasher(data: impl AsRef<[u8]>) -> GenericHash {
         blake3::hash(data.as_ref()).as_bytes().to_owned().into()
     }
-    /// Given a collection of elements, reduce into a single hash by updating the same hasher
-    pub fn iter_hasher(data: &Vec<impl AsRef<[u8]>>) -> GenericHash {
-        let mut hasher = blake3::Hasher::default();
-        for i in data {
-            hasher.update(i.as_ref());
-        }
-        hasher.finalize().as_bytes().to_owned().into()
-    }
 
+    /// [hash_to_deg] leverages the [hasher] function to hash a given input to a given degree
     pub fn hash_to_deg(data: impl AsRef<[u8]>, deg: Option<usize>) -> GenericHash {
         let hs = hasher(data);
         let mut res: GenericHash = hs;
@@ -89,7 +89,17 @@ pub(crate) mod utils {
         }
         res
     }
+
+    /// Given a collection of elements, reduce into a single hash by updating the same hasher
+    pub fn iter_hasher(data: &Vec<impl AsRef<[u8]>>) -> GenericHash {
+        let mut hasher = blake3::Hasher::default();
+        for i in data {
+            hasher.update(i.as_ref());
+        }
+        hasher.finalize().as_bytes().to_owned().into()
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;

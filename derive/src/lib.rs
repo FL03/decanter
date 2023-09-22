@@ -1,8 +1,6 @@
 /*
-    Appellation: scsys-derive <library>
+    Appellation: decanter-derive <library>
     Creator: FL03 <jo3mccain@icloud.com>
-    Description:
-        ... Summary ...
 */
 extern crate proc_macro;
 extern crate quote;

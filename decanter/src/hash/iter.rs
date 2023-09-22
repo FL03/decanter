@@ -1,5 +1,5 @@
 /*
-    Appellation: hasher <module>
+    Appellation: iter <module>
     Contributors: FL03 <jo3mccain@icloud.com>
 */
 use super::{Hashable, Hasher, H256};
@@ -31,11 +31,14 @@ where
     T: Hashable,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut string = String::new();
-        for item in self.iter.iter() {
-            string.push_str(&item.to_string());
-        }
-        write!(f, "{}", string)
+        let tmp = {
+            let mut s = Vec::new();
+            for item in self.iter.iter() {
+                s.push(item.to_string());
+            }
+            s
+        };
+        write!(f, "{}", serde_json::to_string(&tmp).unwrap())
     }
 }
 

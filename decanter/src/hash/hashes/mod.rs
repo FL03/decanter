@@ -14,6 +14,16 @@ pub type H160Hash = [u8; 20];
 /// The H256Hash type is a 32-byte hash.
 pub type H256Hash = [u8; 32];
 
+pub trait Concat {
+    fn concat(&mut self, other: &Self) -> &mut Self;
+}
+
+pub trait BHash {
+    const DIGEST_LEN: usize;
+
+    fn hash(&self) -> H256;
+}
+
 ///
 pub trait Hasher {
     fn hash(data: impl AsRef<[u8]>) -> GenericHash {
@@ -33,3 +43,5 @@ pub trait UpdatableHasher: Hasher {
     fn update(&mut self, data: impl AsRef<[u8]>);
     fn finalize(&mut self) -> GenericHash;
 }
+
+pub(crate) mod utils {}

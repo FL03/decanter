@@ -1,9 +1,12 @@
 /*
     Appellation: decanter <library>
     Contributors: FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)
-    Description:
-        ... Summary ...
 */
+//! # Decanter
+//!
+//! Decanter is a collection of cryptographic primitives and utilities for the Rust programming language.
+//! As of now, Decanter is a work in progress and is not ready for production use.
+//! Additionally, Decanter provides several hashing utilities.
 
 pub use self::{primitives::*, specs::*, utils::*};
 #[doc(inline)]

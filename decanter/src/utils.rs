@@ -1,7 +1,6 @@
 /*
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... summary ...
 */
 use rand::{distributions::Alphanumeric, Rng};
 use std::ops::Range;
