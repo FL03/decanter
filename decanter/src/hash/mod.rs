@@ -22,10 +22,16 @@ pub type GenericHashOutput = UInt<UInt<UInt<UInt<UInt<UInt<UTerm, B1>, B0>, B0>,
 /// [GenericHash] is a generic hash type
 pub type GenericHash<T = u8, Output = GenericHashOutput> = GenericArray<T, Output>;
 
+pub trait Hash {
+
+    fn hash(data: impl AsRef<[u8]>) -> Self;
+}
+
 /// [Hashable] is a trait that defines a hashable object
 pub trait Hashable: ToString {
+    
     fn hash(&self) -> H256 {
-        hasher(self.to_string().as_bytes()).into()
+        blake3::hash(self.to_string().as_bytes()).into()
     }
 }
 
@@ -67,6 +73,19 @@ impl Hashable for f64 {}
 
 pub(crate) mod utils {
     use super::GenericHash;
+
+    pub fn concat_b3(left: blake3::Hash, right: Option<blake3::Hash>) -> blake3::Hash {
+        let mut concatenated: Vec<u8> = left.as_bytes().to_vec();
+
+        match right {
+            Some(right_node) => {
+                let mut right_node_clone: Vec<u8> = right_node.as_bytes().to_vec();
+                concatenated.append(&mut right_node_clone);
+                blake3::hash(&concatenated)
+            }
+            None => left.clone(),
+        }
+    }
 
     pub fn concat_hashes(a: &impl AsRef<[u8]>, b: &impl AsRef<[u8]>) -> GenericHash {
         let mut hasher = blake3::Hasher::new();

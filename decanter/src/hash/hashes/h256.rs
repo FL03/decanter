@@ -42,16 +42,14 @@ impl AsRef<[u8]> for H256 {
 }
 
 impl Concat for H256 {
-    fn concat(&mut self, other: &H256) -> &mut Self {
-        let hash = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(self.as_ref());
-            hasher.update(other.as_ref());
-            hasher.finalize()
-        };
-        self.0 = hash.into();
-        self
+    fn concat(&mut self, other: &Self) -> Self {
+        let mut res: Vec<u8> = (*self).into();
+        let mut rnode: Vec<u8> = (*other).into();
+        res.append(&mut rnode);
+
+        blake3::hash(&res).into()
     }
+    
 }
 
 impl Hashable for H256 {
@@ -60,7 +58,9 @@ impl Hashable for H256 {
     }
 }
 
-impl Hasher for H256 {}
+impl Hasher for H256 {
+    type Hash = Self;
+}
 
 impl Ord for H256 {
     fn cmp(&self, other: &H256) -> std::cmp::Ordering {
@@ -403,8 +403,8 @@ mod tests {
     fn test_concat() {
         let mut a = H256::generate();
         let b = H256::generate();
-        let mut expected: H256 = concat_hashes(&a, &b).into();
-        assert_eq!(a.concat(&b), &mut expected);
+        let expected: H256 = concat_hashes(&a, &b).into();
+        assert_eq!(a.concat(&b), expected);
     }
 
     #[test]

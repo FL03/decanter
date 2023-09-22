@@ -39,15 +39,12 @@ impl AsRef<[u8]> for H160 {
 }
 
 impl Concat for H160 {
-    fn concat(&mut self, other: &H160) -> &mut Self {
-        let hash = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(self.as_ref());
-            hasher.update(other.as_ref());
-            hasher.finalize()
-        };
-        *self = hash.into();
-        self
+    fn concat(&mut self, other: &H160) -> Self {
+        let mut res: Vec<u8> = (*self).into();
+        let mut rnode: Vec<u8> = (*other).into();
+        res.append(&mut rnode);
+
+        blake3::hash(&res).into()
     }
 }
 
@@ -170,12 +167,12 @@ mod tests {
     fn test_concat() {
         let mut a = H160::generate();
         let b = H160::generate();
-        let mut expected: H160 = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(a.clone().as_ref());
-            hasher.update(b.clone().as_ref());
-            hasher.finalize().into()
+        let expected: H160 = {
+            let mut res: Vec<u8> = a.into();
+            let mut rnode: Vec<u8> = b.into();
+            res.append(&mut rnode);
+            blake3::hash(&res).into()
         };
-        assert_eq!(a.concat(&b), &mut expected);
+        assert_eq!(a.concat(&b), expected);
     }
 }

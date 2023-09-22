@@ -15,7 +15,7 @@ pub type H160Hash = [u8; 20];
 pub type H256Hash = [u8; 32];
 
 pub trait Concat {
-    fn concat(&mut self, other: &Self) -> &mut Self;
+    fn concat(&mut self, other: &Self) -> Self;
 }
 
 pub trait BHash {
@@ -24,11 +24,16 @@ pub trait BHash {
     fn hash(&self) -> H256;
 }
 
+
+
 ///
 pub trait Hasher {
+    type Hash: AsRef<[u8]>;
+
     fn hash(data: impl AsRef<[u8]>) -> GenericHash {
         blake3::hash(data.as_ref()).as_bytes().to_owned().into()
     }
+    
     fn hash_to_deg(data: impl AsRef<[u8]>, deg: Option<usize>) -> GenericHash {
         let hs = Self::hash(data);
         let mut res: GenericHash = hs;

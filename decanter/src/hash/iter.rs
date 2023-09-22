@@ -56,7 +56,9 @@ where
     }
 }
 
-impl<T> Hasher for Iter<T> where T: Hashable {}
+impl<T> Hasher for Iter<T> where T: Hashable {
+    type Hash = H256;
+}
 
 impl<T> ExactSizeIterator for Iter<T>
 where
