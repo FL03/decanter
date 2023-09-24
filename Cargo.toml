@@ -18,7 +18,8 @@ exclude = []
 members = [
     "crypto",
     "decanter",
-    "derive"
+    "derive",
+    "macros"
 ]
 resolver = "2"
 

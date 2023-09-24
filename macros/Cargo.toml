@@ -6,30 +6,21 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "decanter-crypto"
+name = "decanter-macros"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
-[features]
-default = []
-
 [lib]
-crate-type = ["cdylib", "rlib"]
-test = true
-
-[build-dependencies]
+proc-macro = true
+test = false
 
 [dependencies]
-ring = "0.16"
+proc-macro2 = "1"
+quote = "1"
+syn = { features = ["full"], version = "2" }
 serde.workspace = true
 serde_json.workspace = true
-smart-default.workspace = true
-strum.workspace = true
-
-[dev-dependencies]
-hex = "0.4"
-vrf = "0.2.4"
 
 [package.metadata.docs.rs]
 all-features = true
