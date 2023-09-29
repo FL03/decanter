@@ -61,6 +61,10 @@ where
     T: Hashable,
 {
     type Hash = H256;
+
+    fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
+        blake3::hash(data.as_ref()).into()
+    }
 }
 
 impl<T> ExactSizeIterator for Iter<T>

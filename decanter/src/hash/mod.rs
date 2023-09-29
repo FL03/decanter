@@ -23,7 +23,27 @@ pub type GenericHashOutput = UInt<UInt<UInt<UInt<UInt<UInt<UTerm, B1>, B0>, B0>,
 pub type GenericHash<T = u8, Output = GenericHashOutput> = GenericArray<T, Output>;
 
 pub trait Hash {
-    fn hash(data: impl AsRef<[u8]>) -> Self;
+    fn as_vec(&self) -> Vec<u8>;
+
+    fn size(&self) -> usize;
+}
+
+impl<T> Hash for T
+where
+    T: AsRef<[u8]>,
+{
+    fn as_vec(&self) -> Vec<u8> {
+        self.as_ref().to_vec()
+    }
+
+    fn size(&self) -> usize {
+        self.as_vec().len()
+    }
+}
+
+pub trait Hasher {
+    type Hash: Hash;
+    fn hash(data: impl AsRef<[u8]>) -> Self::Hash;
 }
 
 /// [Hashable] is a trait that defines a hashable object
@@ -71,6 +91,7 @@ impl Hashable for f64 {}
 
 pub(crate) mod utils {
     use super::GenericHash;
+    use rand::Rng;
 
     pub fn concat_b3(left: blake3::Hash, right: Option<blake3::Hash>) -> blake3::Hash {
         let mut concatenated: Vec<u8> = left.as_bytes().to_vec();
@@ -90,6 +111,12 @@ pub(crate) mod utils {
         hasher.update(a.as_ref());
         hasher.update(b.as_ref());
         hasher.finalize().as_bytes().to_owned().into()
+    }
+
+    pub fn generate_random_hash(n: Option<usize>) -> Vec<u8> {
+        (0..n.unwrap_or(32))
+            .map(|_| rand::thread_rng().gen::<u8>())
+            .collect()
     }
 
     /// hasher implements a generic hash function wrapper around blake3
