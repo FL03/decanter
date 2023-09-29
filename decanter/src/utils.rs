@@ -4,7 +4,7 @@
 */
 use rand::{distributions::Alphanumeric, Rng};
 
-pub fn generate_random_hash(n: Option<usize>) -> Vec<u8> {
+pub fn generate_random_list(n: Option<usize>) -> Vec<u8> {
     (0..n.unwrap_or(32))
         .map(|_| rand::thread_rng().gen::<u8>())
         .collect()
