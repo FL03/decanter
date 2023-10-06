@@ -2,8 +2,8 @@
     Appellation: h160 <module>
     Contributors: FL03 <jo3mccain@icloud.com>
 */
-use super::{Concat, H160Hash, H256};
-use crate::hash::Hashable;
+use super::{H160Hash, H256};
+use crate::prelude::{Concat, Hashable};
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};

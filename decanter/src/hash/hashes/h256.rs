@@ -2,8 +2,10 @@
     Appellation: h256 <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Concat, H256Hash, Hasher, H160};
-use crate::hash::{GenericHash, Hashable};
+use super::{H256Hash, H160};
+use crate::hash::{GenericHash, Hashable, Hasher};
+use crate::Concat;
+
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -59,6 +61,10 @@ impl Hashable for H256 {
 
 impl Hasher for H256 {
     type Hash = Self;
+
+    fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
+        blake3::hash(data.as_ref()).into()
+    }
 }
 
 impl Ord for H256 {

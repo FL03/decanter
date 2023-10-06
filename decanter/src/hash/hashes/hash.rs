@@ -2,8 +2,8 @@
     Appellation: hash <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Concat, Hasher};
-use rand::Rng;
+use crate::Concat;
+// use crate::hash::Hasher;
 use serde::{Deserialize, Serialize};
 use std::ops;
 
@@ -22,8 +22,7 @@ impl Hash {
         }
     }
     pub fn generate() -> Self {
-        let mut rng = rand::thread_rng();
-        let random_bytes: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
+        let random_bytes: Vec<u8> = (0..32).map(|_| rand::random()).collect();
         let mut raw_bytes = [0; 32];
         raw_bytes.copy_from_slice(&random_bytes);
         (&raw_bytes).into()
@@ -58,9 +57,13 @@ impl Concat for Hash {
 //     }
 // }
 
-impl Hasher for Hash {
-    type Hash = Self;
-}
+// impl Hasher for Hash {
+//     type Hash = Self;
+
+//     fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
+//         todo!()
+//     }
+// }
 
 impl Ord for Hash {
     fn cmp(&self, other: &Hash) -> std::cmp::Ordering {
