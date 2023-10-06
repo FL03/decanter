@@ -53,6 +53,25 @@ pub trait Hashable: ToString {
     }
 }
 
+// impl<T> Hashable for T where T: ToString {
+//     fn hash(&self) -> H256 {
+//         blake3::hash(self.to_string().as_bytes()).into()
+//     }
+// }
+
+/// [Hashable] is a trait that defines a hashable object
+pub trait SerdeHash {
+    fn hash(&self) -> H256;
+}
+
+impl<T> SerdeHash for T where T: serde::Serialize {
+    fn hash(&self) -> H256 {
+        let msg = bincode::serialize(self).unwrap();
+        blake3::hash(&msg).into()
+    }
+}
+
+
 impl Hashable for char {}
 
 impl Hashable for String {}
@@ -90,8 +109,8 @@ impl Hashable for f32 {}
 impl Hashable for f64 {}
 
 pub(crate) mod utils {
-    use super::GenericHash;
-    use rand::Rng;
+    use super::{GenericHash, H256};
+    use serde::Serialize;
 
     pub fn concat_b3(left: blake3::Hash, right: Option<blake3::Hash>) -> blake3::Hash {
         let mut concatenated: Vec<u8> = left.as_bytes().to_vec();
@@ -115,7 +134,7 @@ pub(crate) mod utils {
 
     pub fn generate_random_hash(n: Option<usize>) -> Vec<u8> {
         (0..n.unwrap_or(32))
-            .map(|_| rand::thread_rng().gen::<u8>())
+            .map(|_| rand::random::<u8>())
             .collect()
     }
 
@@ -132,6 +151,12 @@ pub(crate) mod utils {
             res = hasher(res);
         }
         res
+    }
+
+
+    pub fn hash_serialize<T: Serialize>(data: &T) -> H256 {
+        let serialized = bincode::serialize(data).expect("");
+        blake3::hash(&serialized).into()
     }
 
     /// Given a collection of elements, reduce into a single hash by updating the same hasher
