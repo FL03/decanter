@@ -26,10 +26,8 @@ pub type BoxHash = Box<dyn Hash>;
 
 pub struct A(Box<dyn Hash>);
 
-pub trait Hash: AsRef<[u8]> {
-    fn as_vec(&self) -> Vec<u8> {
-        self.as_ref().to_vec()
-    }
+pub trait Hash {
+    fn as_vec(&self) -> Vec<u8>;
 
     fn hash<H: Hasher<Hash = Self>>(&self, h: &mut H) -> Self
     where
@@ -45,13 +43,11 @@ pub trait SizedHash: Hash {
     fn size(&self) -> usize;
 }
 
-// impl Hash for blake3::Hash {
-//     fn as_vec(&self) -> Vec<u8> {
-//         self.as_bytes().to_vec()
-//     }
-// }
-
-impl<T> Hash for T where T: AsRef<[u8]> {}
+impl<T> Hash for T where T: AsRef<[u8]> {
+    fn as_vec(&self) -> Vec<u8> {
+        self.as_ref().to_vec()
+    }
+}
 
 impl<const N: usize> SizedHash for [u8; N] {
     const SIZE: usize = N;

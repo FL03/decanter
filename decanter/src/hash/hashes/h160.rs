@@ -38,6 +38,19 @@ impl AsRef<[u8]> for H160 {
     }
 }
 
+impl AsMut<[u8; 20]> for H160 {
+    fn as_mut(&mut self) -> &mut [u8; 20] {
+        &mut self.0
+    }
+}
+
+impl AsRef<[u8; 20]> for H160 {
+    fn as_ref(&self) -> &[u8; 20] {
+        &self.0
+    }
+}
+
+
 impl Concat for H160 {
     fn concat(&mut self, other: &H160) -> Self {
         let mut res: Vec<u8> = (*self).into();

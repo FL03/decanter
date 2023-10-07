@@ -52,6 +52,18 @@ impl AsRef<[u8]> for H256 {
     }
 }
 
+impl AsMut<[u8; 32]> for H256 {
+    fn as_mut(&mut self) -> &mut [u8; 32] {
+        &mut self.0
+    }
+}
+
+impl AsRef<[u8; 32]> for H256 {
+    fn as_ref(&self) -> &[u8; 32] {
+        &self.0
+    }
+}
+
 impl Concat for H256 {
     fn concat(&mut self, other: &Self) -> Self {
         let mut res: Vec<u8> = (*self).into();
