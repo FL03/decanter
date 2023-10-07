@@ -12,17 +12,27 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["crypto"]
-full = ["crypto", "derive"]
-
-crypto = ["decanter-crypto/default"]
-derive = ["decanter-derive"]
-
-wasm = [
-    "decanter-crypto/wasm",
-    "wasm-ext"
+default = [
+    "crypto"
 ]
-wasm-ext = []
+
+full = [
+    "crypto", 
+    "derive",
+]
+
+crypto = [
+    "decanter-crypto"
+]
+
+derive = [
+    "decanter-derive",
+    "macros"
+]
+
+macros = [
+    "decanter-macros"
+]
 
 [lib]
 bench = true
@@ -33,11 +43,13 @@ test = true
 [build-dependencies]
 
 [dependencies]
-decanter-crypto = { features = ["wasm"], optional = true, path = "../crypto", version = "0.1.5" }
-decanter-derive = { optional = true, path = "../derive", version = "0.1.5" }
+decanter-crypto = { optional = true, path = "../crypto", version = "0.1.6" }
+decanter-derive = { optional = true, path = "../derive", version = "0.1.6" }
+decanter-macros = { optional = true, path = "../macros", version = "0.1.6" }
 
+bincode = "1"
 blake3 = "1.3"
-generic-array = "0.14"
+generic-array = "1"
 rand = "0.8"
 serde.workspace = true
 serde_json.workspace = true
@@ -46,11 +58,14 @@ strum.workspace = true
 typenum = "1"
 
 [dev-dependencies]
+hex-literal = "0.4"
+lazy_static = "1.4"
 
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
 
-[target.wasm32-unknown-unknown]
+[target.wasm32-unknown-unknown.dependencies]
+getrandom = { features = ["js"], version = "0.2" }
 
 [target.wasm32-wasi]
