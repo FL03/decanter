@@ -25,7 +25,7 @@ pub(crate) mod utils;
 
 pub mod prelude {
     pub use blake3;
-    
+
     pub use crate::hash::*;
     pub use crate::primitives::*;
     pub use crate::specs::*;

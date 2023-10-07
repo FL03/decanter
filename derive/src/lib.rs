@@ -12,7 +12,7 @@ use internal::*;
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Ident, Result};
+use syn::{parse_macro_input, DeriveInput, Result};
 
 #[proc_macro_derive(Hashable, attributes(decanter))]
 pub fn hashable(input: TokenStream) -> TokenStream {
@@ -31,31 +31,42 @@ fn impl_hashable(ast: &DeriveInput) -> Result<proc_macro2::TokenStream> {
         None => return Err(ctxt.check().unwrap_err()),
     };
     ctxt.check()?;
+    derive_hash(&cont)
+}
+
+fn derive_hash(cont: &ast::Container) -> Result<proc_macro2::TokenStream> {
     let attr = cont.attrs();
     let res = match attr.uses() {
-        attr::HashType::Serde => hash_serde_body(cont.ident()),
-        attr::HashType::String => hash_string_body(cont.ident()),
+        attr::HashType::Serde => hash_serde_body(&cont),
+        attr::HashType::String => hash_string_body(&cont),
     };
     Ok(res)
 }
 
 /// This function is used to generate the implementation of the Hashable trait.
-fn hash_serde_body(ident: &Ident) -> proc_macro2::TokenStream {
+fn hash_serde_body(cont: &ast::Container) -> proc_macro2::TokenStream {
+    let attr = cont.attrs();
+    let decanter = attr.crate_path();
+    let ident = cont.ident();
     quote! {
-        impl decanter::hash::Hashable for #ident {
-            fn hash(&self) -> decanter::hash::H256 {
-                decanter::hash::hash_serialize(&self)
+        impl #decanter::hash::Hashable for #ident {
+            fn hash(&self) -> #decanter::hash::H256 {
+                #decanter::hash::hash_serialize(&self)
             }
         }
     }
 }
 
 // This function is used to generate the implementation of the Hashable trait.
-fn hash_string_body(ident: &Ident) -> proc_macro2::TokenStream {
+fn hash_string_body(cont: &ast::Container) -> proc_macro2::TokenStream {
+    let attr = cont.attrs();
+    let decanter = attr.crate_path();
+    let ident = cont.ident();
+
     quote! {
-        impl decanter::hash::Hashable for #ident {
-            fn hash(&self) -> decanter::hash::H256 {
-                decanter::hash::hasher(self.to_string()).into()
+        impl #decanter::hash::Hashable for #ident {
+            fn hash(&self) -> #decanter::hash::H256 {
+                #decanter::hash::hasher(self.to_string()).into()
             }
         }
     }

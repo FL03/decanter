@@ -24,10 +24,12 @@ pub type GenericHash<T = u8, Output = GenericHashOutput> = GenericArray<T, Outpu
 
 pub type BoxHash = Box<dyn Hash>;
 
-pub trait Hash {
-    const SIZE: usize = 32;
+pub struct A(Box<dyn Hash>);
 
-    fn as_vec(&self) -> Vec<u8>;
+pub trait Hash: AsRef<[u8]> {
+    fn as_vec(&self) -> Vec<u8> {
+        self.as_ref().to_vec()
+    }
 
     fn hash<H: Hasher<Hash = Self>>(&self, h: &mut H) -> Self
     where
@@ -35,29 +37,43 @@ pub trait Hash {
     {
         h.update(self.as_vec()).finalize()
     }
+}
+
+pub trait SizedHash: Hash {
+    const SIZE: usize = 32;
+
+    fn size(&self) -> usize;
+}
+
+// impl Hash for blake3::Hash {
+//     fn as_vec(&self) -> Vec<u8> {
+//         self.as_bytes().to_vec()
+//     }
+// }
+
+impl<T> Hash for T where T: AsRef<[u8]> {}
+
+impl<const N: usize> SizedHash for [u8; N] {
+    const SIZE: usize = N;
 
     fn size(&self) -> usize {
-        Self::SIZE
+        N
     }
 }
 
-impl Hash for blake3::Hash {
-    fn as_vec(&self) -> Vec<u8> {
-        self.as_bytes().to_vec()
-    }
-}
-
-impl Hash for [u8; 20] {
+impl SizedHash for H160 {
     const SIZE: usize = 20;
 
-    fn as_vec(&self) -> Vec<u8> {
-        self.as_ref().to_vec()
+    fn size(&self) -> usize {
+        20
     }
 }
 
-impl Hash for [u8; 32] {
-    fn as_vec(&self) -> Vec<u8> {
-        self.as_ref().to_vec()
+impl SizedHash for H256 {
+    const SIZE: usize = 32;
+
+    fn size(&self) -> usize {
+        32
     }
 }
 
@@ -90,20 +106,6 @@ impl Hasher for blake3::Hasher {
 /// [Hashable] is a trait that defines a hashable object
 pub trait Hashable {
     fn hash(&self) -> H256;
-}
-
-// impl<T> Hashable for T where T: ToString {
-//     fn hash(&self) -> H256 {
-//         blake3::hash(self.to_string().as_bytes()).into()
-//     }
-// }
-
-/// [Shash] describes a hashable object
-pub trait Shash: serde::Serialize {
-    fn hash(&self) -> H256 {
-        let msg = bincode::serialize(self).expect("Failed to serialize item");
-        blake3::hash(&msg).into()
-    }
 }
 
 impl Hashable for char {

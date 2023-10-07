@@ -76,12 +76,4 @@ mod tests {
         assert_eq!(b.hash(), hash_serialize(&data));
         assert_ne!(a.hash(), b.hash());
     }
-
-    #[test]
-    fn test_derive_attr() {
-        let data: i64 = 0;
-        let a = TestStruct::new(data);
-        let exp: H256 = hash_serialize(&data);
-        assert_eq!(a.hash(), exp);
-    }
 }

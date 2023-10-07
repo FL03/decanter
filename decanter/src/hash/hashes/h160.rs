@@ -48,14 +48,6 @@ impl Concat for H160 {
     }
 }
 
-impl crate::hash::Hash for H160 {
-    const SIZE: usize = 20;
-
-    fn as_vec(&self) -> Vec<u8> {
-        self.0.to_vec()
-    }
-}
-
 impl Hashable for H160 {
     fn hash(&self) -> H256 {
         (*self).into()
@@ -74,17 +66,16 @@ impl std::fmt::Debug for H160 {
 
 impl std::fmt::Display for H160 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        use crate::hash::Hash;
         let start = if let Some(precision) = f.precision() {
             if precision >= 40 {
                 0
             } else {
-                self.size() - precision / 2
+                20 - precision / 2
             }
         } else {
             0
         };
-        for byte_idx in start..self.size() {
+        for byte_idx in start..20 {
             write!(f, "{:>02x}", &self.0[byte_idx])?;
         }
         Ok(())

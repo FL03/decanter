@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{H256Hash, H160};
-use crate::hash::{GenericHash, Hash, Hashable, Hasher};
+use crate::hash::{GenericHash, Hashable, Hasher};
 use crate::Concat;
 
 use serde::{Deserialize, Serialize};
@@ -11,13 +11,13 @@ use std::ops;
 
 fn hash(data: impl AsRef<[u8]>) -> H256 {
     let hash = blake3::hash(data.as_ref());
-    digest_to_hash(hash.as_bytes())
+    H256(digest_to_hash::<32>(hash.as_bytes()))
 }
 
-fn digest_to_hash(hash: impl AsRef<[u8]>) -> H256 {
-    let mut raw_hash: [u8; 32] = [0; 32];
-    raw_hash[0..32].copy_from_slice(hash.as_ref());
-    H256(raw_hash)
+fn digest_to_hash<const N: usize>(hash: impl AsRef<[u8]>) -> [u8; N] {
+    let mut raw_hash: [u8; N] = [0; N];
+    raw_hash[0..N].copy_from_slice(hash.as_ref());
+    raw_hash
 }
 
 /// A SHA256 hash.
@@ -59,12 +59,6 @@ impl Concat for H256 {
         res.append(&mut rnode);
 
         blake3::hash(&res).into()
-    }
-}
-
-impl Hash for H256 {
-    fn as_vec(&self) -> Vec<u8> {
-        self.0.to_vec()
     }
 }
 
@@ -142,7 +136,7 @@ impl std::fmt::Display for H256 {
 impl FromIterator<u8> for H256 {
     fn from_iter<T: IntoIterator<Item = u8>>(iter: T) -> Self {
         let digest = iter.into_iter().collect::<Vec<u8>>();
-        digest_to_hash(&digest)
+        digest_to_hash::<32>(&digest).into()
     }
 }
 
@@ -181,7 +175,7 @@ impl From<H256> for [u8; 32] {
 
 impl From<Vec<u8>> for H256 {
     fn from(input: Vec<u8>) -> H256 {
-        digest_to_hash(&input)
+        digest_to_hash::<32>(&input).into()
     }
 }
 
@@ -416,7 +410,7 @@ mod tests {
     fn test_h256() {
         let a = H256::generate();
         assert_ne!(a, H256::generate());
-        assert_eq!(a, digest_to_hash(a));
+        assert_eq!(a, digest_to_hash::<32>(a).into());
     }
 
     #[test]

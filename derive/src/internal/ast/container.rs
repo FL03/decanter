@@ -4,7 +4,7 @@
 */
 use crate::internal::{attr, Ctxt};
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Container {
     /// Attributes on the structure, parsed for Serde.
     pub attrs: attr::Container,

@@ -2,9 +2,10 @@
     Appellation: container <mod>
     Creator: FL03 <jo3mccain@icloud.com>
 */
-use super::BoolAttr;
+use super::{parse_lit_into_path, Attr, BoolAttr};
 use crate::internal::*;
 use quote::ToTokens;
+use std::borrow::Cow;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[repr(u8)]
@@ -30,21 +31,24 @@ impl HashType {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Container {
     pub non_exhaustive: bool,
+    pub path: Option<syn::Path>,
     pub uses: HashType,
 }
 
 impl Container {
-    pub fn new(non_exhaustive: bool, uses: HashType) -> Self {
+    pub fn new(non_exhaustive: bool, path: Option<syn::Path>, uses: HashType) -> Self {
         Self {
             non_exhaustive,
+            path,
             uses,
         }
     }
     /// Extract out the `#[decanter(...)]` attributes from an item.
     pub fn from_ast(cx: &Ctxt, item: &syn::DeriveInput) -> Self {
+        let mut path = Attr::none(cx, CRATE);
         let mut serde = BoolAttr::none(cx, SERDE);
         let mut string = BoolAttr::none(cx, STRING);
         // properties
@@ -69,6 +73,11 @@ impl Container {
                 } else if meta.path == STRING {
                     // #[decanter(string)]
                     string.set_true(meta.path);
+                } else if meta.path == CRATE {
+                    // #[decanter(crate = "foo")]
+                    if let Some(p) = parse_lit_into_path(cx, CRATE, &meta)? {
+                        path.set(&meta.path, p);
+                    }
                 } else {
                     let path = meta.path.to_token_stream().to_string().replace(' ', "");
                     return Err(
@@ -81,7 +90,20 @@ impl Container {
             }
         }
 
-        Self::new(non_exhaustive, HashType::decide(cx, item, serde, string))
+        Self::new(
+            non_exhaustive,
+            path.get(),
+            HashType::decide(cx, item, serde, string),
+        )
+    }
+
+    pub fn custom_path(&self) -> Option<&syn::Path> {
+        self.path.as_ref()
+    }
+
+    pub fn crate_path(&self) -> Cow<syn::Path> {
+        self.custom_path()
+            .map_or_else(|| Cow::Owned(syn::parse_quote!(decanter)), Cow::Borrowed)
     }
 
     pub fn uses(&self) -> HashType {
