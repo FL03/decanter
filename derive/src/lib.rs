@@ -14,50 +14,30 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Ident, Result};
 
-
-#[proc_macro_derive(Hashable)]
+#[proc_macro_derive(Hashable, attributes(decanter))]
 pub fn hashable(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
-    
+
     let gen = impl_hashable(&ast);
-
-    gen.into()
-}
-
-/// This function is used to generate the implementation of the Hashable trait.
-fn impl_hashable(ast: &DeriveInput) -> proc_macro2::TokenStream {
-    let ident = &ast.ident;
-    hash_string_body(ident)
-}
-
-#[proc_macro_derive(Dash, attributes(dec))]
-pub fn shash(input: TokenStream) -> TokenStream {
-    let ast = parse_macro_input!(input as DeriveInput);
-    let gen = impl_shash(&ast);
 
     gen.expect("").into()
 }
 
 /// This function is used to generate the implementation of the Hashable trait.
-fn impl_shash(ast: &DeriveInput) -> Result<proc_macro2::TokenStream> {
-    let ident = &ast.ident;
+fn impl_hashable(ast: &DeriveInput) -> Result<proc_macro2::TokenStream> {
     let ctxt = Ctxt::new();
     let cont = match ast::Container::from_ast(&ctxt, ast) {
         Some(cont) => cont,
         None => return Err(ctxt.check().unwrap_err()),
     };
-    let attr = cont.attrs;
+    ctxt.check()?;
+    let attr = cont.attrs();
     let res = match attr.uses() {
-        attr::HashType::Serde => {
-            hash_serde_body(ident)
-        }
-        attr::HashType::String => {
-            hash_string_body(ident)
-        }
+        attr::HashType::Serde => hash_serde_body(cont.ident()),
+        attr::HashType::String => hash_string_body(cont.ident()),
     };
     Ok(res)
 }
-
 
 /// This function is used to generate the implementation of the Hashable trait.
 fn hash_serde_body(ident: &Ident) -> proc_macro2::TokenStream {

@@ -44,7 +44,7 @@ where
     fn hash(&self) -> H256 {
         let mut hasher = blake3::Hasher::new();
         for item in self.iter.iter() {
-            hasher.update(item.to_string().as_bytes());
+            hasher.update(item.to_string().as_ref());
         }
         let hash = hasher.finalize();
         hash.into()

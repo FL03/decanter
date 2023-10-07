@@ -48,7 +48,7 @@ impl<'a> PartialEq<Symbol> for &'a Path {
 pub(crate) mod symbols {
     use super::Symbol;
 
-    pub const DECANTER: Symbol = Symbol("dec");
+    pub const DECANTER: Symbol = Symbol("decanter");
 
     pub const NON_EXHAUSTIVE: Symbol = Symbol("non_exhaustive");
 

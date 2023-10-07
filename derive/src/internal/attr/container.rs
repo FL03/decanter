@@ -30,6 +30,7 @@ impl HashType {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Container {
     pub non_exhaustive: bool,
     pub uses: HashType,

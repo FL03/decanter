@@ -5,10 +5,24 @@
 #[cfg(test)]
 #[cfg(feature = "derive")]
 mod tests {
-    use decanter::prelude::{*, hash_serialize};
+    use decanter::prelude::{hash_serialize, *};
     use serde::{Deserialize, Serialize};
 
-    #[derive(Clone, Debug, Default, Deserialize, Hashable, Serialize)]
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        Default,
+        Deserialize,
+        Eq,
+        Hash,
+        Hashable,
+        Ord,
+        PartialEq,
+        PartialOrd,
+        Serialize,
+    )]
+    #[decanter(string)]
     pub struct Sample(i64);
 
     impl Sample {
@@ -23,8 +37,21 @@ mod tests {
         }
     }
 
-    #[derive(Clone, Dash, Debug, Default, Deserialize, Serialize)]
-    #[dec(serde)]
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        Default,
+        Deserialize,
+        Eq,
+        Hash,
+        Hashable,
+        Ord,
+        PartialEq,
+        PartialOrd,
+        Serialize,
+    )]
+    #[decanter(serde)]
     pub struct TestStruct(i64);
 
     impl TestStruct {
@@ -43,8 +70,11 @@ mod tests {
     fn test_derive_hashable() {
         let data: i64 = 0;
         let a = Sample::new(data);
-        let exp: H256 = hasher(data.to_string()).into();
-        assert_eq!(Hashable::hash(&a), exp);
+        let b = TestStruct::new(data);
+        let str_hash: H256 = hasher(data.to_string()).into();
+        assert_eq!(a.hash(), str_hash);
+        assert_eq!(b.hash(), hash_serialize(&data));
+        assert_ne!(a.hash(), b.hash());
     }
 
     #[test]
@@ -52,6 +82,6 @@ mod tests {
         let data: i64 = 0;
         let a = TestStruct::new(data);
         let exp: H256 = hash_serialize(&data);
-        // assert_eq!(a.hash(), exp);
+        assert_eq!(a.hash(), exp);
     }
 }
