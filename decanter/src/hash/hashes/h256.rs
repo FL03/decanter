@@ -3,12 +3,22 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{H256Hash, H160};
-use crate::hash::{GenericHash, Hashable, Hasher};
+use crate::hash::{GenericHash, Hash, Hashable, Hasher};
 use crate::Concat;
 
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::ops;
+
+fn hash(data: impl AsRef<[u8]>) -> H256 {
+    let hash = blake3::hash(data.as_ref());
+    digest_to_hash(hash.as_bytes())
+}
+
+fn digest_to_hash(hash: impl AsRef<[u8]>) -> H256 {
+    let mut raw_hash: [u8; 32] = [0; 32];
+    raw_hash[0..32].copy_from_slice(hash.as_ref());
+    H256(raw_hash)
+}
 
 /// A SHA256 hash.
 #[derive(Clone, Copy, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
@@ -16,13 +26,12 @@ pub struct H256(pub H256Hash);
 
 impl H256 {
     pub fn new(data: impl AsRef<[u8]>) -> Self {
-        H256::from(blake3::hash(data.as_ref()))
+        hash(data)
     }
     pub fn generate() -> Self {
-        let mut rng = rand::thread_rng();
-        let random_bytes: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
+        let data = rand::random::<[u8; 32]>();
         let mut raw_bytes = [0; 32];
-        raw_bytes.copy_from_slice(&random_bytes);
+        raw_bytes.copy_from_slice(&data);
         (&raw_bytes).into()
     }
 
@@ -53,6 +62,12 @@ impl Concat for H256 {
     }
 }
 
+impl Hash for H256 {
+    fn as_vec(&self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+}
+
 impl Hashable for H256 {
     fn hash(&self) -> H256 {
         *self
@@ -62,8 +77,17 @@ impl Hashable for H256 {
 impl Hasher for H256 {
     type Hash = Self;
 
+    fn finalize(&self) -> Self::Hash {
+        *self
+    }
+
     fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
         blake3::hash(data.as_ref()).into()
+    }
+
+    fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self {
+        self.0 = blake3::hash(data.as_ref()).into();
+        self
     }
 }
 
@@ -117,9 +141,8 @@ impl std::fmt::Display for H256 {
 
 impl FromIterator<u8> for H256 {
     fn from_iter<T: IntoIterator<Item = u8>>(iter: T) -> Self {
-        let mut buffer: [u8; 32] = [0; 32];
-        buffer[..].copy_from_slice(&iter.into_iter().collect::<Vec<_>>()[0..32]);
-        H256(buffer)
+        let digest = iter.into_iter().collect::<Vec<u8>>();
+        digest_to_hash(&digest)
     }
 }
 
@@ -137,11 +160,7 @@ where
     T: AsRef<[u8]>,
 {
     fn from(data: &T) -> H256 {
-        let hash = {
-            let mut hasher = blake3::Hasher::new();
-            hasher.update(data.as_ref());
-            hasher.finalize()
-        };
+        let hash = blake3::hash(data.as_ref());
         let mut buffer: [u8; 32] = [0; 32];
         buffer[..].copy_from_slice(hash.as_bytes());
         H256(buffer)
@@ -150,7 +169,7 @@ where
 
 impl From<[u8; 32]> for H256 {
     fn from(input: [u8; 32]) -> H256 {
-        H256::from_iter(input.to_vec())
+        H256(input)
     }
 }
 
@@ -162,9 +181,7 @@ impl From<H256> for [u8; 32] {
 
 impl From<Vec<u8>> for H256 {
     fn from(input: Vec<u8>) -> H256 {
-        let mut raw_hash: [u8; 32] = [0; 32];
-        raw_hash[0..32].copy_from_slice(input.as_ref());
-        H256::from_iter(input.to_vec())
+        digest_to_hash(&input)
     }
 }
 
@@ -399,7 +416,7 @@ mod tests {
     fn test_h256() {
         let a = H256::generate();
         assert_ne!(a, H256::generate());
-        assert_eq!(a, H256::from_iter(a.as_ref().to_vec()));
+        assert_eq!(a, digest_to_hash(a));
     }
 
     #[test]

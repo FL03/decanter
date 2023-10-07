@@ -22,35 +22,77 @@ pub type GenericHashOutput = UInt<UInt<UInt<UInt<UInt<UInt<UTerm, B1>, B0>, B0>,
 /// [GenericHash] is a generic hash type
 pub type GenericHash<T = u8, Output = GenericHashOutput> = GenericArray<T, Output>;
 
+pub type BoxHash = Box<dyn Hash>;
+
 pub trait Hash {
+    const SIZE: usize = 32;
+
     fn as_vec(&self) -> Vec<u8>;
 
-    fn size(&self) -> usize;
-}
-
-impl<T> Hash for T
-where
-    T: AsRef<[u8]>,
-{
-    fn as_vec(&self) -> Vec<u8> {
-        self.as_ref().to_vec()
+    fn hash<H: Hasher<Hash = Self>>(&self, h: &mut H) -> Self where Self: Sized {
+        h.update(self.as_vec()).finalize()
     }
 
     fn size(&self) -> usize {
-        self.as_vec().len()
+        Self::SIZE
+    }
+}
+
+impl Hash for blake3::Hash {
+    fn as_vec(&self) -> Vec<u8> {
+        self.as_bytes().to_vec()
+    }
+
+}
+
+impl Hash for [u8; 20] {
+    const SIZE: usize = 20;
+    
+    fn as_vec(&self) -> Vec<u8> {
+        self.as_ref().to_vec()
+    }
+}
+
+impl Hash for [u8; 32] {
+    fn as_vec(&self) -> Vec<u8> {
+        self.as_ref().to_vec()
     }
 }
 
 pub trait Hasher {
     type Hash: Hash;
+
+    fn finalize(&self) -> Self::Hash;
+
     fn hash(data: impl AsRef<[u8]>) -> Self::Hash;
+
+    fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self;
+    
+}
+
+
+
+impl Hasher for blake3::Hasher {
+    type Hash = H256;
+
+    fn finalize(&self) -> Self::Hash {
+        blake3::Hasher::finalize(&self).into()
+    }
+
+    fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
+        blake3::hash(data.as_ref()).into()
+    }
+
+    fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self {
+        self.update(data.as_ref())
+    }
+
+
 }
 
 /// [Hashable] is a trait that defines a hashable object
-pub trait Hashable: ToString {
-    fn hash(&self) -> H256 {
-        blake3::hash(self.to_string().as_bytes()).into()
-    }
+pub trait Hashable {
+    fn hash(&self) -> H256;
 }
 
 // impl<T> Hashable for T where T: ToString {
@@ -59,54 +101,121 @@ pub trait Hashable: ToString {
 //     }
 // }
 
-/// [Hashable] is a trait that defines a hashable object
-pub trait SerdeHash {
-    fn hash(&self) -> H256;
-}
-
-impl<T> SerdeHash for T where T: serde::Serialize {
+/// [Shash] describes a hashable object
+pub trait Shash: serde::Serialize {
     fn hash(&self) -> H256 {
-        let msg = bincode::serialize(self).unwrap();
+        let msg = bincode::serialize(self).expect("Failed to serialize item");
         blake3::hash(&msg).into()
     }
 }
 
+impl Hashable for char {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for char {}
+impl Hashable for String {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for String {}
+impl Hashable for &str {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for &str {}
+impl Hashable for u8 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for u8 {}
+impl Hashable for u16 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for u16 {}
+impl Hashable for u32 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for u32 {}
+impl Hashable for u64 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for u64 {}
+impl Hashable for u128 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for u128 {}
+impl Hashable for usize {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for usize {}
+impl Hashable for i8 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for i8 {}
+impl Hashable for i16 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for i16 {}
+impl Hashable for i32 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for i32 {}
+impl Hashable for i64 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for i64 {}
+impl Hashable for i128 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for i128 {}
+impl Hashable for isize {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for isize {}
+impl Hashable for bool {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for bool {}
+impl Hashable for f32 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
-impl Hashable for f32 {}
-
-impl Hashable for f64 {}
+impl Hashable for f64 {
+    fn hash(&self) -> H256 {
+        blake3::hash(self.to_string().as_bytes()).into()
+    }
+}
 
 pub(crate) mod utils {
     use super::{GenericHash, H256};
@@ -133,9 +242,7 @@ pub(crate) mod utils {
     }
 
     pub fn generate_random_hash(n: Option<usize>) -> Vec<u8> {
-        (0..n.unwrap_or(32))
-            .map(|_| rand::random::<u8>())
-            .collect()
+        (0..n.unwrap_or(32)).map(|_| rand::random::<u8>()).collect()
     }
 
     /// hasher implements a generic hash function wrapper around blake3
@@ -152,7 +259,6 @@ pub(crate) mod utils {
         }
         res
     }
-
 
     pub fn hash_serialize<T: Serialize>(data: &T) -> H256 {
         let serialized = bincode::serialize(data).expect("");

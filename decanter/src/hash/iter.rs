@@ -2,8 +2,9 @@
     Appellation: iter <module>
     Contributors: FL03 <jo3mccain@icloud.com>
 */
-use super::{Hashable, Hasher, H256};
+use super::{Hashable, H256};
 use serde::{Deserialize, Serialize};
+use std::ops;
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct Iter<T>
@@ -24,27 +25,22 @@ where
             iter: Vec::new(),
         }
     }
+
 }
 
 impl<T> std::fmt::Display for Iter<T>
 where
-    T: Hashable,
+    T: Hashable + ToString,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let tmp = {
-            let mut s = Vec::new();
-            for item in self.iter.iter() {
-                s.push(item.to_string());
-            }
-            s
-        };
+        let tmp = self.iter.iter().map(|i| i.to_string()).collect::<Vec<_>>();
         write!(f, "{}", serde_json::to_string(&tmp).unwrap())
     }
 }
 
 impl<T> Hashable for Iter<T>
 where
-    T: Hashable,
+    T: Hashable + ToString,
 {
     fn hash(&self) -> H256 {
         let mut hasher = blake3::Hasher::new();
@@ -56,16 +52,40 @@ where
     }
 }
 
-impl<T> Hasher for Iter<T>
-where
-    T: Hashable,
-{
-    type Hash = H256;
+// impl<T> Hashable for Iter<T>
+// where
+//     T: Hashable + Serialize,
+// {
+//     fn hash(&self) -> H256 {
+//         let mut hasher = blake3::Hasher::new();
+//         for item in self.iter.iter() {
+//             let tmp = bincode::serialize(item).expect("Failed to serialize item");
+//             hasher.update(&tmp);
+//         }
+//         let hash = hasher.finalize();
+//         hash.into()
+//     }
+// }
 
-    fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
-        blake3::hash(data.as_ref()).into()
-    }
-}
+// impl<T> Hasher for Iter<T>
+// where
+//     T: Hashable + ToString,
+// {
+//     type Hash = H256;
+
+//     fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
+//         blake3::hash(data.as_ref()).into()
+//     }
+
+//     fn finalize(self) -> Self::Hash {
+//         Hashable::hash(&self)
+//     }
+
+//     fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self {
+//         self.iter.push(data);
+//         self
+//     }
+// }
 
 impl<T> ExactSizeIterator for Iter<T>
 where
@@ -111,7 +131,7 @@ where
     }
 }
 
-impl<T> std::ops::Index<usize> for Iter<T>
+impl<T> ops::Index<usize> for Iter<T>
 where
     T: Hashable,
 {
@@ -122,18 +142,18 @@ where
     }
 }
 
-impl<T> std::ops::Index<std::ops::Range<usize>> for Iter<T>
+impl<T> ops::Index<ops::Range<usize>> for Iter<T>
 where
     T: Hashable,
 {
     type Output = [T];
 
-    fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
+    fn index(&self, index: ops::Range<usize>) -> &Self::Output {
         &self.iter[index]
     }
 }
 
-impl<T> std::ops::IndexMut<usize> for Iter<T>
+impl<T> ops::IndexMut<usize> for Iter<T>
 where
     T: Hashable,
 {
@@ -142,11 +162,11 @@ where
     }
 }
 
-impl<T> std::ops::IndexMut<std::ops::Range<usize>> for Iter<T>
+impl<T> ops::IndexMut<ops::Range<usize>> for Iter<T>
 where
     T: Hashable,
 {
-    fn index_mut(&mut self, index: std::ops::Range<usize>) -> &mut Self::Output {
+    fn index_mut(&mut self, index: ops::Range<usize>) -> &mut Self::Output {
         &mut self.iter[index]
     }
 }
@@ -158,6 +178,7 @@ mod tests {
     #[test]
     fn test_hasher() {
         let data = vec![1, 2, 3, 4, 5];
+        let data_str = data.clone().into_iter().map(|i| i.to_string()).collect::<Vec<_>>();
         let mut iter = Iter::new();
         iter.extend(data.clone());
 
@@ -169,10 +190,7 @@ mod tests {
         assert_eq!(
             iter.hash(),
             crate::hash::iter_hasher(
-                &data
-                    .into_iter()
-                    .map(|i| i.to_string())
-                    .collect::<Vec<String>>()
+                &data_str
             )
             .into(),
         );
