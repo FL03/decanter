@@ -34,11 +34,6 @@ macros = [
     "decanter-macros"
 ]
 
-wasm = [
-    "wasm-ext"
-]
-wasm-ext = []
-
 [lib]
 bench = true
 crate-type = ["cdylib", "rlib"]
