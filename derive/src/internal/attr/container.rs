@@ -31,7 +31,7 @@ impl HashType {
     }
 }
 
-#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+#[derive(Clone)]
 pub struct Container {
     pub non_exhaustive: bool,
     pub path: Option<syn::Path>,
