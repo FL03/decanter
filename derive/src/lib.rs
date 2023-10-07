@@ -12,25 +12,8 @@ use internal::*;
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::parse::{Parse, ParseStream, Result};
-use syn::{parse_macro_input, DeriveInput, Ident, Token};
+use syn::{parse_macro_input, DeriveInput, Ident, Result};
 
-type SynResult<T = ()> = std::result::Result<T, syn::Error>;
-
-struct Decanter {
-    serde: Option<Ident>,
-    string: Option<Ident>,
-}
-
-impl Parse for Decanter {
-    fn parse(input: ParseStream) -> Result<Self> {
-        let serde = input.parse().unwrap_or(None);
-        input.parse::<Token![,]>()?;
-        let string = input.parse().unwrap_or(None);
-
-        Ok(Decanter { serde, string })
-    }
-}
 
 #[proc_macro_derive(Hashable)]
 pub fn hashable(input: TokenStream) -> TokenStream {
@@ -56,7 +39,7 @@ pub fn shash(input: TokenStream) -> TokenStream {
 }
 
 /// This function is used to generate the implementation of the Hashable trait.
-fn impl_shash(ast: &DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
+fn impl_shash(ast: &DeriveInput) -> Result<proc_macro2::TokenStream> {
     let ident = &ast.ident;
     let ctxt = Ctxt::new();
     let cont = match ast::Container::from_ast(&ctxt, ast) {

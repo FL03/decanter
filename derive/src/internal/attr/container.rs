@@ -2,7 +2,7 @@
     Appellation: container <mod>
     Creator: FL03 <jo3mccain@icloud.com>
 */
-use super::{Attr, BoolAttr};
+use super::BoolAttr;
 use crate::internal::*;
 use quote::ToTokens;
 
@@ -15,7 +15,7 @@ pub enum HashType {
 }
 
 impl HashType {
-    pub fn decide(cx: &Ctxt, item: &syn::DeriveInput, serde: BoolAttr, string: BoolAttr) -> Self {
+    pub fn decide(cx: &Ctxt, _item: &syn::DeriveInput, serde: BoolAttr, string: BoolAttr) -> Self {
         match (
             serde.attr().get_with_tokens(),
             string.attr().get_with_tokens(),

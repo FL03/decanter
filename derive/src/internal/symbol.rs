@@ -50,8 +50,6 @@ pub(crate) mod symbols {
 
     pub const DECANTER: Symbol = Symbol("dec");
 
-    pub const SHASH: Symbol = Symbol("shash");
-
     pub const NON_EXHAUSTIVE: Symbol = Symbol("non_exhaustive");
 
     pub const SERDE: Symbol = Symbol("serde");
