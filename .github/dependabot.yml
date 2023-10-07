@@ -13,6 +13,10 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
+    directory: /decanter
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
     directory: /derive
     schedule:
       interval: daily
@@ -20,7 +24,4 @@ updates:
     directory: /macros
     schedule:
       interval: daily
-  - package-ecosystem: cargo
-    directory: /decanter
-    schedule:
-      interval: daily
+

@@ -15,23 +15,24 @@ version.workspace = true
 default = [
     "crypto"
 ]
+
 full = [
     "crypto", 
-    "derive"
+    "derive",
 ]
 
 crypto = [
     "decanter-crypto"
 ]
+
 derive = [
-    "decanter-derive"
+    "decanter-derive",
+    "macros"
 ]
 
-wasm = [
-    "decanter-crypto/wasm",
-    "wasm-ext"
+macros = [
+    "decanter-macros"
 ]
-wasm-ext = []
 
 [lib]
 bench = true
@@ -44,7 +45,9 @@ test = true
 [dependencies]
 decanter-crypto = { optional = true, path = "../crypto", version = "0.1.6" }
 decanter-derive = { optional = true, path = "../derive", version = "0.1.6" }
+decanter-macros = { optional = true, path = "../macros", version = "0.1.6" }
 
+bincode = "1"
 blake3 = "1.3"
 generic-array = "1"
 rand = "0.8"

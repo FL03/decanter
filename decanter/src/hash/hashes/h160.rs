@@ -2,8 +2,8 @@
     Appellation: h160 <module>
     Contributors: FL03 <jo3mccain@icloud.com>
 */
-use super::{Concat, H160Hash, H256};
-use crate::hash::Hashable;
+use super::{H160Hash, H256};
+use crate::prelude::{Concat, Hashable};
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -37,6 +37,19 @@ impl AsRef<[u8]> for H160 {
         &self.0
     }
 }
+
+impl AsMut<[u8; 20]> for H160 {
+    fn as_mut(&mut self) -> &mut [u8; 20] {
+        &mut self.0
+    }
+}
+
+impl AsRef<[u8; 20]> for H160 {
+    fn as_ref(&self) -> &[u8; 20] {
+        &self.0
+    }
+}
+
 
 impl Concat for H160 {
     fn concat(&mut self, other: &H160) -> Self {
