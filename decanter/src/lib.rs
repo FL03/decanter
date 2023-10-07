@@ -14,20 +14,27 @@ pub use self::{primitives::*, specs::*, utils::*};
 pub use decanter_crypto as crypto;
 #[cfg(feature = "derive")]
 pub use decanter_derive::*;
+#[cfg(feature = "macros")]
+pub use decanter_macros::*;
 
 pub mod hash;
 
-mod primitives;
-mod specs;
-mod utils;
+pub(crate) mod primitives;
+pub(crate) mod specs;
+pub(crate) mod utils;
 
 pub mod prelude {
     pub use blake3;
-
-    pub use super::*;
-
-    pub use super::hash::*;
+    
+    pub use crate::hash::*;
+    pub use crate::primitives::*;
+    pub use crate::specs::*;
+    pub use crate::utils::*;
 
     #[cfg(feature = "crypto")]
-    pub use super::crypto::*;
+    pub use crate::crypto::*;
+    #[cfg(feature = "derive")]
+    pub use decanter_derive::*;
+    #[cfg(feature = "macros")]
+    pub use decanter_macros::*;
 }

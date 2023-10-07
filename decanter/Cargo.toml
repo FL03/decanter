@@ -27,7 +27,7 @@ crypto = [
 
 derive = [
     "decanter-derive",
-    "decanter-macros"
+    "macros"
 ]
 
 macros = [
