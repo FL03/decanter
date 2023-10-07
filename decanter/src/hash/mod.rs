@@ -29,7 +29,10 @@ pub trait Hash {
 
     fn as_vec(&self) -> Vec<u8>;
 
-    fn hash<H: Hasher<Hash = Self>>(&self, h: &mut H) -> Self where Self: Sized {
+    fn hash<H: Hasher<Hash = Self>>(&self, h: &mut H) -> Self
+    where
+        Self: Sized,
+    {
         h.update(self.as_vec()).finalize()
     }
 
@@ -42,12 +45,11 @@ impl Hash for blake3::Hash {
     fn as_vec(&self) -> Vec<u8> {
         self.as_bytes().to_vec()
     }
-
 }
 
 impl Hash for [u8; 20] {
     const SIZE: usize = 20;
-    
+
     fn as_vec(&self) -> Vec<u8> {
         self.as_ref().to_vec()
     }
@@ -67,10 +69,7 @@ pub trait Hasher {
     fn hash(data: impl AsRef<[u8]>) -> Self::Hash;
 
     fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self;
-    
 }
-
-
 
 impl Hasher for blake3::Hasher {
     type Hash = H256;
@@ -86,8 +85,6 @@ impl Hasher for blake3::Hasher {
     fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self {
         self.update(data.as_ref())
     }
-
-
 }
 
 /// [Hashable] is a trait that defines a hashable object

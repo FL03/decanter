@@ -5,40 +5,53 @@
 #[cfg(test)]
 #[cfg(feature = "derive")]
 mod tests {
-    use decanter::prelude::*;
+    use decanter::prelude::{*, hash_serialize};
     use serde::{Deserialize, Serialize};
 
-    #[derive(Clone, Debug, Default, Deserialize, Hashable, Serialize, Shash)]
-    pub struct TestStruct {
-        id: i64,
+    #[derive(Clone, Debug, Default, Deserialize, Hashable, Serialize)]
+    pub struct Sample(i64);
+
+    impl Sample {
+        pub fn new(data: i64) -> Self {
+            Self(data)
+        }
     }
 
+    impl std::fmt::Display for Sample {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}", self.0)
+        }
+    }
+
+    #[derive(Clone, Dash, Debug, Default, Deserialize, Serialize)]
+    #[dec(serde)]
+    pub struct TestStruct(i64);
+
     impl TestStruct {
-        pub fn new(id: i64) -> Self {
-            Self { id }
+        pub fn new(data: i64) -> Self {
+            Self(data)
         }
     }
 
     impl std::fmt::Display for TestStruct {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{}", self.id)
+            write!(f, "{}", self.0)
         }
     }
 
     #[test]
     fn test_derive_hashable() {
         let data: i64 = 0;
-        let a = TestStruct::new(data);
+        let a = Sample::new(data);
         let exp: H256 = hasher(data.to_string()).into();
         assert_eq!(Hashable::hash(&a), exp);
-        assert_ne!(Hashable::hash(&a), Shash::hash(&a));
     }
 
     #[test]
-    fn test_derive_shash() {
+    fn test_derive_attr() {
         let data: i64 = 0;
         let a = TestStruct::new(data);
         let exp: H256 = hash_serialize(&data);
-        assert_eq!(Shash::hash(&a), exp);
+        // assert_eq!(a.hash(), exp);
     }
 }

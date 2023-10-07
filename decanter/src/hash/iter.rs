@@ -25,7 +25,6 @@ where
             iter: Vec::new(),
         }
     }
-
 }
 
 impl<T> std::fmt::Display for Iter<T>
@@ -178,7 +177,11 @@ mod tests {
     #[test]
     fn test_hasher() {
         let data = vec![1, 2, 3, 4, 5];
-        let data_str = data.clone().into_iter().map(|i| i.to_string()).collect::<Vec<_>>();
+        let data_str = data
+            .clone()
+            .into_iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<_>>();
         let mut iter = Iter::new();
         iter.extend(data.clone());
 
@@ -187,12 +190,6 @@ mod tests {
             assert_eq!(iter.next(), Some(H256::new(i.to_string())));
         }
         // Assert that the hash of the iterator produces a single value
-        assert_eq!(
-            iter.hash(),
-            crate::hash::iter_hasher(
-                &data_str
-            )
-            .into(),
-        );
+        assert_eq!(iter.hash(), crate::hash::iter_hasher(&data_str).into(),);
     }
 }
