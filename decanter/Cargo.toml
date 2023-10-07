@@ -43,9 +43,9 @@ test = true
 [build-dependencies]
 
 [dependencies]
-decanter-crypto = { optional = true, path = "../crypto", version = "0.1.6" }
-decanter-derive = { optional = true, path = "../derive", version = "0.1.6" }
-decanter-macros = { optional = true, path = "../macros", version = "0.1.6" }
+decanter-crypto = { optional = true, path = "../crypto", version = "0.1.7" }
+decanter-derive = { optional = true, path = "../derive", version = "0.1.7" }
+decanter-macros = { optional = true, path = "../macros", version = "0.1.7" }
 
 bincode = "1"
 blake3 = "1.3"

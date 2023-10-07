@@ -21,7 +21,7 @@ test = true
 [build-dependencies]
 
 [dependencies]
-ring = "0.16"
+ring = "0.17"
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
