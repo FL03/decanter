@@ -22,10 +22,6 @@ pub type GenericHashOutput = UInt<UInt<UInt<UInt<UInt<UInt<UTerm, B1>, B0>, B0>,
 /// [GenericHash] is a generic hash type
 pub type GenericHash<T = u8, Output = GenericHashOutput> = GenericArray<T, Output>;
 
-pub type BoxHash = Box<dyn Hash>;
-
-pub struct A(Box<dyn Hash>);
-
 pub trait Hash {
     fn as_vec(&self) -> Vec<u8>;
 
