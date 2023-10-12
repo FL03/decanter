@@ -39,12 +39,13 @@ where
 
 impl<T> Hashable for Iter<T>
 where
-    T: Hashable + ToString,
+    T: Hashable + Serialize,
 {
     fn hash(&self) -> H256 {
         let mut hasher = blake3::Hasher::new();
         for item in self.iter.iter() {
-            hasher.update(item.to_string().as_ref());
+            let ser = bincode::serialize(item).expect("Failed to serialize item");
+            hasher.update(&ser);
         }
         let hash = hasher.finalize();
         hash.into()
@@ -177,11 +178,6 @@ mod tests {
     #[test]
     fn test_hasher() {
         let data = vec![1, 2, 3, 4, 5];
-        let data_str = data
-            .clone()
-            .into_iter()
-            .map(|i| i.to_string())
-            .collect::<Vec<_>>();
         let mut iter = Iter::new();
         iter.extend(data.clone());
 
@@ -190,6 +186,6 @@ mod tests {
             assert_eq!(iter.next(), Some(H256::new(i.to_string())));
         }
         // Assert that the hash of the iterator produces a single value
-        assert_eq!(iter.hash(), crate::hash::iter_hasher(&data_str).into(),);
+        assert_eq!(iter.hash(), crate::hash::hash_iter_ser(&data).into(),);
     }
 }

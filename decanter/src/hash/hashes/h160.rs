@@ -50,7 +50,6 @@ impl AsRef<[u8; 20]> for H160 {
     }
 }
 
-
 impl Concat for H160 {
     fn concat(&mut self, other: &H160) -> Self {
         let mut res: Vec<u8> = (*self).into();

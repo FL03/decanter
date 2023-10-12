@@ -6,10 +6,11 @@
 //!
 //! The hash module provides a generic hash function wrapper around blake3
 //!
-pub use self::{hashes::*, iter::*, utils::*};
+pub use self::{hasher::*, hashes::*, iter::*, utils::*};
 
-mod hashes;
-mod iter;
+pub(crate) mod hasher;
+pub(crate) mod hashes;
+pub(crate) mod iter;
 
 use generic_array::GenericArray;
 use typenum::{
@@ -39,7 +40,10 @@ pub trait SizedHash: Hash {
     fn size(&self) -> usize;
 }
 
-impl<T> Hash for T where T: AsRef<[u8]> {
+impl<T> Hash for T
+where
+    T: AsRef<[u8]>,
+{
     fn as_vec(&self) -> Vec<u8> {
         self.as_ref().to_vec()
     }
@@ -66,32 +70,6 @@ impl SizedHash for H256 {
 
     fn size(&self) -> usize {
         32
-    }
-}
-
-pub trait Hasher {
-    type Hash: Hash;
-
-    fn finalize(&self) -> Self::Hash;
-
-    fn hash(data: impl AsRef<[u8]>) -> Self::Hash;
-
-    fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self;
-}
-
-impl Hasher for blake3::Hasher {
-    type Hash = H256;
-
-    fn finalize(&self) -> Self::Hash {
-        blake3::Hasher::finalize(&self).into()
-    }
-
-    fn hash(data: impl AsRef<[u8]>) -> Self::Hash {
-        blake3::hash(data.as_ref()).into()
-    }
-
-    fn update(&mut self, data: impl AsRef<[u8]>) -> &mut Self {
-        self.update(data.as_ref())
     }
 }
 
@@ -264,6 +242,16 @@ pub(crate) mod utils {
         }
         hasher.finalize().as_bytes().to_owned().into()
     }
+
+    /// Given a collection of elements, reduce into a single hash by updating the same hasher
+    pub fn hash_iter_ser<T: Serialize>(data: &Vec<T>) -> GenericHash {
+        let mut hasher = blake3::Hasher::default();
+        for i in data {
+            let ser = bincode::serialize(i).expect("");
+            hasher.update(&ser);
+        }
+        hasher.finalize().as_bytes().to_owned().into()
+    }
 }
 
 #[cfg(test)]
@@ -275,18 +263,6 @@ mod tests {
     fn test_hasher() {
         let a = hasher(generate_random_string(None));
         let b = hasher(generate_random_string(None));
-        assert_ne!(&a, &b)
-    }
-
-    #[test]
-    fn test_iter_hasher() {
-        let hashes = |i: usize| {
-            std::ops::Range { start: 0, end: i }
-                .map(|_| generate_random_string(None))
-                .collect::<Vec<String>>()
-        };
-        let a = iter_hasher(&hashes(10));
-        let b = iter_hasher(&hashes(12));
         assert_ne!(&a, &b)
     }
 }

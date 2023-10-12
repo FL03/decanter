@@ -2,23 +2,12 @@
     Appellation: h256 <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{H256Hash, H160};
+use super::{digest_to_hash, hash, H256Hash, H160};
 use crate::hash::{GenericHash, Hashable, Hasher};
 use crate::Concat;
 
 use serde::{Deserialize, Serialize};
 use std::ops;
-
-fn hash(data: impl AsRef<[u8]>) -> H256 {
-    let hash = blake3::hash(data.as_ref());
-    H256(digest_to_hash::<32>(hash.as_bytes()))
-}
-
-fn digest_to_hash<const N: usize>(hash: impl AsRef<[u8]>) -> [u8; N] {
-    let mut raw_hash: [u8; N] = [0; N];
-    raw_hash[0..N].copy_from_slice(hash.as_ref());
-    raw_hash
-}
 
 /// A SHA256 hash.
 #[derive(Clone, Copy, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
@@ -28,6 +17,7 @@ impl H256 {
     pub fn new(data: impl AsRef<[u8]>) -> Self {
         hash(data)
     }
+
     pub fn generate() -> Self {
         let data = rand::random::<[u8; 32]>();
         let mut raw_bytes = [0; 32];
