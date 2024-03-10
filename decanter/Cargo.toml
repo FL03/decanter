@@ -22,16 +22,16 @@ full = [
 ]
 
 crypto = [
-    "decanter-crypto"
+    "dep:decanter-crypto"
 ]
 
 derive = [
-    "decanter-derive",
+    "dep:decanter-derive",
     "macros"
 ]
 
 macros = [
-    "decanter-macros"
+    "dep:decanter-macros"
 ]
 
 [lib]

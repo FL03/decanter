@@ -4,22 +4,13 @@ env:
   CARGO_TERM_COLOR: always
 
 on:
-  pull_request:
-    branches-ignore: [ "beta*", "dev*", "next*" ]
   push:
-    branches-ignore: [ "beta*", "dev*", "next*" ]
-    tags: [ "nightly*",  "v*.*.*" ]
+    branches: [ main ]
+    tags: [ nightly*,  v*.*.* ]
   release:
-      types: [created]
-  schedule:
-    - cron: "30 9 * * *" # 9:30am UTC
+      types: [ created ]
+  repository_dispatch:
   workflow_dispatch:
-    inputs:
-      publish:
-        default: true
-        description: 'Publish'
-        required: true
-        type: boolean
 
 jobs:
   build:
@@ -30,14 +21,14 @@ jobs:
         toolchain: [ stable, nightly ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup (langspace)
         run: |
           rustup update
           rustup default ${{ matrix.toolchain }}
       - name: configure toolchain target
         if: ${{ matrix.target != 'native' }} && ${{matrix.toolchain == 'nightly' }}
-        run: rustup target add wasm32-unknown-unknown
+        run: rustup target add ${{ matrix.target }}
       - name: Build
         if: ${{ matrix.target == 'native' }}
         run: cargo build --all-features -r -v --workspace
@@ -45,19 +36,19 @@ jobs:
         if: ${{ matrix.target != 'native' }}
         run: cargo build --all-features -r -v --workspace --target ${{ matrix.target }}
       - name: Cache build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             target/release
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.toolchain }}-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
   test:
     name: Test
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Test
         run: cargo test --all-features -r -v --workspace
 
