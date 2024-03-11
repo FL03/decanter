@@ -8,7 +8,7 @@
 //! As of now, Decanter is a work in progress and is not ready for production use.
 //! Additionally, Decanter provides several hashing utilities.
 
-pub use self::{specs::*, utils::*};
+pub use self::utils::*;
 
 #[cfg(feature = "crypto")]
 pub use decanter_crypto as crypto;
