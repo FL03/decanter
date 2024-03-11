@@ -4,7 +4,7 @@
 */
 use super::{digest_to_hash, hash, H256Hash, H160};
 use crate::hash::{GenericHash, Hashable, Hasher};
-use crate::Concat;
+use crate::specs::Concat;
 
 use serde::{Deserialize, Serialize};
 use std::ops;
