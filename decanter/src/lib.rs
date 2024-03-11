@@ -8,8 +8,8 @@
 //! As of now, Decanter is a work in progress and is not ready for production use.
 //! Additionally, Decanter provides several hashing utilities.
 
-pub use self::{primitives::*, specs::*, utils::*};
-#[doc(inline)]
+pub use self::{specs::*, utils::*};
+
 #[cfg(feature = "crypto")]
 pub use decanter_crypto as crypto;
 #[cfg(feature = "derive")]
@@ -18,9 +18,8 @@ pub use decanter_derive::*;
 pub use decanter_macros::*;
 
 pub mod hash;
+pub mod specs;
 
-pub(crate) mod primitives;
-pub(crate) mod specs;
 pub(crate) mod utils;
 
 pub mod prelude {

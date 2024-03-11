@@ -16,10 +16,4 @@ pub fn generate_random_string(length: Option<usize>) -> String {
     (0..length.unwrap_or(12)).map(gen).collect::<String>()
 }
 
-pub trait Generative {}
-
-impl Generative for Vec<u8> {}
-
-impl Generative for String {}
-
 pub struct Generator {}
