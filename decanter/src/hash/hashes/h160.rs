@@ -50,6 +50,20 @@ impl AsRef<[u8; 20]> for H160 {
     }
 }
 
+impl ops::Deref for H160 {
+    type Target = H160Hash;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl ops::DerefMut for H160 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 impl Concat for H160 {
     fn concat(&mut self, other: &H160) -> Self {
         let mut res: Vec<u8> = (*self).into();

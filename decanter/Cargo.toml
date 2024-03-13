@@ -40,6 +40,10 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
+[[test]]
+name = "derive"
+required-features = ["derive"]
+
 [build-dependencies]
 
 [dependencies]

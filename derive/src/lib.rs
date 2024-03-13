@@ -1,6 +1,6 @@
 /*
     Appellation: decanter-derive <library>
-    Creator: FL03 <jo3mccain@icloud.com>
+    Contrib: FL03 <jo3mccain@icloud.com>
 */
 extern crate proc_macro;
 extern crate quote;

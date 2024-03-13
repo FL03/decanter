@@ -34,19 +34,28 @@ pub trait Hash {
     }
 }
 
+impl Hash for H256 {
+    fn as_vec(&self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+}
+
+impl Hash for H160 {
+    fn as_vec(&self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+}
+
+impl<const N: usize> Hash for [u8; N] {
+    fn as_vec(&self) -> Vec<u8> {
+        self.to_vec()
+    }
+}
+
 pub trait SizedHash: Hash {
     const SIZE: usize = 32;
 
     fn size(&self) -> usize;
-}
-
-impl<T> Hash for T
-where
-    T: AsRef<[u8]>,
-{
-    fn as_vec(&self) -> Vec<u8> {
-        self.as_ref().to_vec()
-    }
 }
 
 impl<const N: usize> SizedHash for [u8; N] {

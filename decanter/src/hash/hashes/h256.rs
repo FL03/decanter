@@ -54,6 +54,20 @@ impl AsRef<[u8; 32]> for H256 {
     }
 }
 
+impl ops::Deref for H256 {
+    type Target = H256Hash;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl ops::DerefMut for H256 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 impl Concat for H256 {
     fn concat(&mut self, other: &Self) -> Self {
         let mut res: Vec<u8> = (*self).into();

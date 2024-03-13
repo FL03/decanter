@@ -5,7 +5,7 @@
 #[cfg(test)]
 #[cfg(feature = "derive")]
 mod tests {
-    use decanter::prelude::{hash_serialize, *};
+    use decanter::prelude::*;
     use serde::{Deserialize, Serialize};
 
     #[derive(
